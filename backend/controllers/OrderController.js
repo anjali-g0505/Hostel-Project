@@ -198,4 +198,7 @@ const orderLog = async(req,res) => {
 module.exports = {
     getPendingOrders,
     placeOrder,
+    changeOrderStatus,
+    getAccepted,
+    orderLog
 };
