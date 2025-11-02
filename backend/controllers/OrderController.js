@@ -105,8 +105,44 @@ const placeOrder= async (req,res)=>{
     }
 }
 
+const changeOrderStatus = async(req,res)=>{
+    try{
+        let {status} = req.body;
+        let {id} = req.params; 
+        if (!['Accepted', 'Rejected', 'Ready'].includes(status)) 
+            {
+                return res.status(400).json({ //Bad request
+                    message: 'Invalid status.',
+                    success: false 
+                });
+            }
+        let order = await OrderModel.findById(id);
+        if(!order){
+            return res.status(404).json({ //Not found
+                    message: 'Order not found for the given id.',
+                    success: false 
+                });
+        }
+        order.status=status;
+        await order.save();
+        res.status(200).json({
+                message: `Status changed successfully to ${status}`,
+                success: true,
+                order: order 
+            });
+    }
+    catch(err){
+        console.error("Change Status Error:", err);
+        res.status(500).json({
+            message:"Internal Server Error. Could not change status.",
+            success:false,
+        })
+    }
+}
+
 
 module.exports = {
     getPendingOrders,
-    placeOrder
+    placeOrder,
+    changeOrderStatus
 };
