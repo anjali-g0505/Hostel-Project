@@ -105,8 +105,64 @@ const placeOrder= async (req,res)=>{
     }
 }
 
+const getAccepted = async (req, res) => {
+    try {
+    const { category } = req.params; 
+    const items = await OrderModel.find({category, status: 'Accepted' })
+      .sort({ createdAt: -1 });
+
+    if (items.length === 0) {
+      return res.status(200).json({
+        message: "No orders accepted today.",
+        success: true,
+        items
+      });
+    }
+
+    res.status(200).json({
+      message: "Accepted items viewed successfully.",
+      success: true,
+      items:items
+    });
+    } catch (error) {
+    console.error("Accepted items Error:", error);
+    res.status(500).json({
+      message: "Could not retrieve accepted items. Internal Server Error",
+      success: false,
+    });
+  }
+}
+
+const orderLog = async(req,res) => {
+    try {
+    const { category } = req.params; 
+    const items = await OrderModel.find({category, status: { $in: ['Accepted', 'Ready'] }}).sort({ createdAt: -1 });
+
+    if (items.length === 0) {
+      return res.status(200).json({
+        message: "No orders logs today.",
+        success: true,
+        items
+      });
+    }
+
+    res.status(200).json({
+      message: "Order logs viewed successfully.",
+      success: true,
+      items:items
+    });
+    } catch (error) {
+    console.error("Order logs Error:", error);
+    res.status(500).json({
+      message: "Could not retrieve order logs. Internal Server Error",
+      success: false,
+    });
+  }
+}
 
 module.exports = {
     getPendingOrders,
-    placeOrder
+    placeOrder,
+    getAccepted,
+    orderLog
 };
