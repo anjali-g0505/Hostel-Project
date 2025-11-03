@@ -34,7 +34,7 @@ function MessNavbar() {
                 {/* Menu items */}
                 <ul className={menuOpen ? "navbar-menu active" : "navbar-menu"}>
                     <li className="navbar-item">
-                        <Link to="/mess/view-orders" className="navbar-link" onClick={() => setMenuOpen(false)}>ऑर्डर घ्या</Link>
+                        <Link to="/mess/view-pending-orders" className="navbar-link" onClick={() => setMenuOpen(false)}>ऑर्डर घ्या</Link>
                     </li>
                     <li className="navbar-item">
                         <Link to="/mess/update-menu" className="navbar-link" onClick={() => setMenuOpen(false)}>आजचा मेनू</Link>

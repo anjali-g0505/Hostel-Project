@@ -133,7 +133,6 @@ function ManageMenu() {
     };
 
     //In the add item form
-    
     const handleCategoryCheckbox = (e) => {
         const { name, checked } = e.target;
         setCategories(prev => ({ ...prev, [name]: checked }));

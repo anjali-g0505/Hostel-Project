@@ -14,7 +14,7 @@ function MenuItemCard(props) {
                         onClick={onToggleStatus}
                         title="Remove from student menu"
                     >
-                        Remove from Menu
+                        मेनूमधून काढा
                     </button>
                 ) : (
                     <button 
@@ -22,7 +22,7 @@ function MenuItemCard(props) {
                         onClick={onToggleStatus}
                         title="Add to student menu"
                     >
-                        Add to Menu
+                        मेनूमध्ये जोडा
                     </button>
                 )}
                 
@@ -31,7 +31,7 @@ function MenuItemCard(props) {
                     onClick={onDelete}
                     title="Permanently delete item"
                 >
-                    Delete Item
+                    मेनू आयटम हटवा
                 </button>
             </div>
         </div>

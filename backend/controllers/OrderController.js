@@ -10,7 +10,7 @@ const getPendingOrders=async(req,res)=>{
                 success: false
             });
         }
-        let orders = await OrderModel.find({ "status": "Pending", "category": category });
+        let orders = await OrderModel.find({ "status": "Pending", "category": category }).populate('studentID', 'name role mobile');
         if (orders.length === 0) {
             return res.status(200).json({
                 message: `No pending orders found for ${category}.`, 
@@ -143,21 +143,20 @@ const changeOrderStatus = async(req,res)=>{
 const getAccepted = async (req, res) => {
     try {
     const { category } = req.params; 
-    const items = await OrderModel.find({category, status: 'Accepted' })
-      .sort({ createdAt: -1 });
+    let orders = await OrderModel.find({category, status: 'Accepted' }).populate('studentID', 'name role mobile').sort({ createdAt: -1 });
 
-    if (items.length === 0) {
+    if (orders.length === 0) {
       return res.status(200).json({
         message: "No orders accepted today.",
         success: true,
-        items
+        orders
       });
     }
 
     res.status(200).json({
       message: "Accepted items viewed successfully.",
       success: true,
-      items:items
+      orders:orders
     });
     } catch (error) {
     console.error("Accepted items Error:", error);
@@ -171,20 +170,20 @@ const getAccepted = async (req, res) => {
 const orderLog = async(req,res) => {
     try {
     const { category } = req.params; 
-    const items = await OrderModel.find({category, status: { $in: ['Accepted', 'Ready'] }}).sort({ createdAt: -1 });
+    let orders = await OrderModel.find({category, status: { $in: ['Accepted', 'Ready'] }}).populate('studentID', 'name role mobile').sort({ createdAt: -1 });
 
-    if (items.length === 0) {
+    if (orders.length === 0) {
       return res.status(200).json({
         message: "No orders logs today.",
         success: true,
-        items
+        orders
       });
     }
 
     res.status(200).json({
       message: "Order logs viewed successfully.",
       success: true,
-      items:items
+      orders:orders
     });
     } catch (error) {
     console.error("Order logs Error:", error);

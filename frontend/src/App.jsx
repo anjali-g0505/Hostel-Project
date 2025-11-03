@@ -15,6 +15,9 @@ import NightOutForm from './pages/Student/NightOutForm'
 import ViewApplications from './pages/Student/ViewApplications'
 import ViewPendingApplications from './pages/Warden/ViewPendingApplications'
 import ManageMenu from './pages/Mess/ManageMenu'
+import TakeOrder from './pages/Mess/TakeOrder'
+import OrderReady from './pages/Mess/OrderReady'
+import OrderLogs from './pages/Mess/OrderLogs'
 
 function ProtectedLayout() {
   return (
@@ -64,6 +67,11 @@ function App() {
             <Route path="/student/view-applications" element={<ViewApplications />} />
 
             <Route path="/mess/update-menu" element={<ManageMenu/>} />
+            <Route path="/mess/view-pending-orders" element={<TakeOrder/>} />
+            <Route path="/mess/mark-ready" element={<OrderReady/>} />
+            <Route path="/mess/order-log" element={<OrderLogs/>} />
+            
+
 
 
 

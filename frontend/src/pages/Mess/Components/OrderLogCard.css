@@ -1,0 +1,116 @@
+.order-log-card {
+    width: 350px;
+    font-family: 'Libre Baskerville', serif;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem 1.25rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.student-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.student-mobile {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.order-status-badge {
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.status-accepted {
+    background-color: #F2B401; 
+    color:#FFFFFF;
+}
+.status-ready {
+    background-color: #105F6B; 
+    color: #FFFFFF;
+}
+
+.order-card-body {
+    padding: 0.5rem 1.25rem;
+    flex-grow: 1;
+}
+
+.order-item-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.order-item {
+    display: flex;
+    padding: 0.5rem 0;
+    font-size: 1rem;
+}
+
+.item-quantity {
+    font-weight: 700;
+    color: #333;
+    margin-right: 0.5rem;
+}
+
+.item-name {
+    flex-grow: 1;
+    color: #111;
+}
+
+.item-price {
+    font-weight: 600;
+    color: #555;
+}
+
+.order-instructions {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: #fffbe6;
+    border: 1px solid #ffe58f;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #594a1d;
+}
+
+.order-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background-color: #f9f9f9;
+    border-top: 1px solid #f0f0f0;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.order-total {
+    font-size: 1.1rem;
+    color: #333;
+}
+.order-total strong {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #00897B;
+}
+.order-time {
+    font-size: 0.97rem;
+    font-weight: 600;
+    color: #555;
+}
