@@ -53,12 +53,12 @@
 
 .dashboard-card h4 {
   margin-top: 0;
-  font-size: 1.25rem;
-  color: #2c3e50;
+  font-size: 1.35rem;
+  color: #1D2B3A;
 }
 
 .dashboard-card p {
   font-size: 1rem;
-  color: #555;
+  color: #000000;
   line-height: 1.5;
 }
