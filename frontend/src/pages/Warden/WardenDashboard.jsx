@@ -25,7 +25,7 @@ function WardenDashboard() {
           <p>View, edit, or delete past announcements.</p>
         </Link>
         
-        <Link to="/warden/order-mess" className="dashboard-card">
+        <Link to="/warden/request-order" className="dashboard-card">
           <h4>Order from Mess</h4>
           <p>Place food orders for events or personal use.</p>
         </Link>

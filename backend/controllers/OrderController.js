@@ -33,7 +33,7 @@ const getPendingOrders=async(req,res)=>{
         });
     }
 }
-const placeOrder= async (req,res)=>{
+const requestOrder= async (req,res)=>{
     try {
         const { items, specialInstructions, category } = req.body;
         const studentID = req.user.id; 
@@ -167,6 +167,18 @@ const getAccepted = async (req, res) => {
   }
 }
 
+const viewMyOrders = async(req,res){
+    try{
+        const id=req.user.id;
+        
+
+
+    }
+    catch (error){
+
+    }
+}
+
 const orderLog = async(req,res) => {
     try {
     const { category } = req.params; 
@@ -196,8 +208,9 @@ const orderLog = async(req,res) => {
 
 module.exports = {
     getPendingOrders,
-    placeOrder,
+    requestOrder,
     changeOrderStatus,
     getAccepted,
-    orderLog
+    orderLog,
+    viewMyOrders
 };

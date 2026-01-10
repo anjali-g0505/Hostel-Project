@@ -43,7 +43,7 @@ function WardenNavbar() {
                         <Link to="/warden/announcement-log" className="navbar-link" onClick={() => setMenuOpen(false)}>Announcement Log</Link>
                     </li>
                     <li className="navbar-item">
-                        <Link to="/warden/order-mess" className="navbar-link" onClick={() => setMenuOpen(false)}>Order from Mess</Link>
+                        <Link to="/warden/request-order" className="navbar-link" onClick={() => setMenuOpen(false)}>Order from Mess</Link>
                     </li>
                     {/* The logout button is now inside the <ul> for mobile */}
                     <li className="navbar-item">

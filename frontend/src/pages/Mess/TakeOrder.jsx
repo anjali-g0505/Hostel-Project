@@ -148,7 +148,7 @@ function TakeOrder() {
                     </div>
                 ) : (
                     <p className="no-orders-msg">
-                        आराम करा, कोणतेही ऑर्डर नाहीत. {activeCategory}.
+                        आराम करा, कोणतेही ऑर्डर नाहीत.
                     </p>
                 )}
             </div>
