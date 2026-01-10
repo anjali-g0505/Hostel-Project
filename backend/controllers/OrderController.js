@@ -167,15 +167,22 @@ const getAccepted = async (req, res) => {
   }
 }
 
-const viewMyOrders = async(req,res){
+const viewMyOrders = async(req,res)=>{
     try{
         const id=req.user.id;
-        
-
-
+        const orders= await OrderModel.find({studentID:id}).sort({createdAt:-1});
+        return res.status(200).json({
+            message:"Orders viewed successfully!",
+            success: true,
+            orders: orders,
+        })   
     }
-    catch (error){
-
+    catch (err){
+        console.error("Error:", err);
+        return res.status(500).json({
+            message:"Could not view application. Internal Server Error.",
+            success:false
+        })
     }
 }
 
