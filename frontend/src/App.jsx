@@ -19,6 +19,7 @@ import TakeOrder from './pages/Mess/TakeOrder'
 import OrderReady from './pages/Mess/OrderReady'
 import OrderLogs from './pages/Mess/OrderLogs'
 import Menu from './pages/Mess/Menu'
+import ViewCart from './pages/Warden/viewCart'
 
 function ProtectedLayout() {
   return (
@@ -63,7 +64,7 @@ function App() {
             <Route path="/warden/announcement-log" element={<AnnouncementLogs />} />
             <Route path="/warden/view-applications" element={<ViewPendingApplications />} />
             <Route path="/warden/request-order" element={<Menu />} />
-            
+            <Route path="/warden/view-cart" element={<ViewCart />} />
 
             <Route path="/student/nightout-form" element={<NightOutForm />} />
             <Route path="/student/view-applications" element={<ViewApplications />} />
@@ -72,7 +73,6 @@ function App() {
             <Route path="/mess/view-pending-orders" element={<TakeOrder/>} />
             <Route path="/mess/mark-ready" element={<OrderReady/>} />
             <Route path="/mess/order-log" element={<OrderLogs/>} />
-            
             
 
             {/* <Route path="/warden/add-announcement" element={<YourAddAnnouncementPage />} /> */}

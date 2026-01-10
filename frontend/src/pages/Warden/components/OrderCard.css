@@ -1,0 +1,92 @@
+.order-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-left: 5px solid #ddd;
+}
+
+
+.order-card:has(.accepted) { border-left-color: #28a745; }
+.order-card:has(.pending) { border-left-color: #ffc107; }
+.order-card:has(.rejected) { border-left-color: #dc3545; }
+
+
+.order-cat-tag {
+    display: inline-block;
+    font-size: 1.4rem;         
+    font-weight: 800;         
+    text-transform: uppercase;
+    color: #09121b;           
+    background-color:#ffffff;
+    padding: 4px 12px;        
+    border-radius: 6px;       
+    letter-spacing: 1px;
+}
+
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;      
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.order-time {
+    font-size: 0.85rem;
+    color: #777;
+    white-space: nowrap;      
+}
+
+.order-item-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+.item-quantity { font-weight: bold; margin-right: 8px; color: #2c3e50; }
+
+.order-instructions {
+    background: #fdf6e3;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+.order-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 10px;
+}
+
+.order-total { font-size: 1.1rem; }
+
+
+.btn-status {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.accepted { background-color: #28a745; color: white; }
+.accepted:hover { transform: scale(1.05); background-color: #218838; }
+
+.pending { background-color: #fff3cd; color: #856404; cursor: not-allowed; }
+.rejected { background-color: #f8d7da; color: #721c24; cursor: not-allowed; }
