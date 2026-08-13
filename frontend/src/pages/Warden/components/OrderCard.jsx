@@ -3,6 +3,7 @@ import './OrderCard.css';
 import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../../utils';
+import OrderProgressStepper from './OrderProgressStepper';
 
 function OrderCard(props) {
     const [isLoading, setIsLoading]= useState(false);
@@ -24,12 +25,13 @@ const handlePayment = async () => {
             handleError("Please login again.");
             return navigate('/login');
         }
-        
+        console.log("TOken receieved");
         const keyResponse = await fetch("http://localhost:8080/api/getKey", {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const keyResult = await keyResponse.json();
         const key = keyResult.key;
+        console.log("Key receieved");
 
         // Creating the Razorpay Order
         const paymentResponse = await fetch("http://localhost:8080/api/payment/process", {
@@ -45,7 +47,7 @@ const handlePayment = async () => {
         });
 
         const paymentResult = await paymentResponse.json();
-
+        console.log("response receieved");
         if (!paymentResult.success) {
             handleError(paymentResult.message);
             return;
@@ -67,9 +69,10 @@ const handlePayment = async () => {
                 color: '#F37254'
             },
         };
-
+        console.log("Window opening");
         const rzp = new window.Razorpay(options); //code from the razorpay documentation to open the razorpay window
         rzp.open();
+        console.log("Window opened.");
 
     } catch (error) {
         console.error("Payment Error:", error);
@@ -92,6 +95,8 @@ const handlePayment = async () => {
                     >
                         {isLoading ? "Processing..." : "Pay Now"}
                     </button>)
+            case 'Paid':
+                return <button className='btn-status paid' disabled>Preparing...</button>;
             case 'Rejected':
                 return <button className='btn-status rejected' disabled>Rejected</button>;
             case 'Ready':
@@ -103,6 +108,8 @@ const handlePayment = async () => {
 
     return (
         <div className="order-card">
+            <OrderProgressStepper status={props.status} />
+
             <div className="order-card-header">
                 <div>
                     <span className="order-cat-tag">{props.category}</span>

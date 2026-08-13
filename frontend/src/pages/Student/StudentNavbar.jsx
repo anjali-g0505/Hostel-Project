@@ -43,6 +43,9 @@ function StudentNavbar() {
                         <Link to="/student/order-from-mess" className="navbar-link" onClick={() => setMenuOpen(false)}>Order from Mess</Link>
                     </li>
                     <li className="navbar-item">
+                        <Link to="/student/view-cart" className="navbar-link" onClick={() => setMenuOpen(false)}>My Orders</Link>
+                    </li>
+                    <li className="navbar-item">
                         <button onClick={handleLogout} className="btn btn-primary btn-lg">
                             Logout
                         </button>

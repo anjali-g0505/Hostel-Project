@@ -27,7 +27,10 @@ const PORT=process.env.PORT || 8080; //load the PORT from env or use hard-coded 
 app.get('/ping', (req,res) => {
     res.send('PONG');
 })
+app.use(express.json()); 
 
+// 2. ADD THIS LINE: Required for Razorpay callback_url
+app.use(express.urlencoded({ extended: true }));
 
 app.use(bodyParser.json());
 app.use(cors());//will take requests from any ports

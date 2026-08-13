@@ -68,12 +68,14 @@ function App() {
 
             <Route path="/student/nightout-form" element={<NightOutForm />} />
             <Route path="/student/view-applications" element={<ViewApplications />} />
+            <Route path="/student/order-from-mess" element={<Menu />} />
+            <Route path="/student/view-cart" element={<ViewCart />} />
 
             <Route path="/mess/update-menu" element={<ManageMenu/>} />
             <Route path="/mess/view-pending-orders" element={<TakeOrder/>} />
             <Route path="/mess/mark-ready" element={<OrderReady/>} />
             <Route path="/mess/order-log" element={<OrderLogs/>} />
-            
+
 
             {/* <Route path="/warden/add-announcement" element={<YourAddAnnouncementPage />} /> */}
             

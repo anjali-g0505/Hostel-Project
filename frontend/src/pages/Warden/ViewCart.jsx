@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import { handleError, handleSuccess } from '../utils'; 
+import { handleError, handleSuccess } from '../utils';
 import OrderCard from './components/OrderCard.jsx' // Corrected component name
+import './ViewCart.css';
 
 
-function ViewCart() { 
+function ViewCart() {
     const [isLoading, setIsLoading] = useState(true);
     const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const paymentStatus = searchParams.get('payment');
 
     useEffect(() => {
-        fetchOrders(); 
-    }, []); 
+        fetchOrders();
+    }, []);
+
+    const dismissPaymentBanner = () => {
+        setSearchParams(params => {
+            params.delete('payment');
+            return params;
+        }, { replace: true });
+    };
 
     const fetchOrders = async () => {
         setIsLoading(true);
@@ -50,10 +60,37 @@ function ViewCart() {
     return (
         <div className="take-order-page">
             <ToastContainer />
+
+            {paymentStatus === 'success' && (
+                <div className="payment-banner success">
+                    <div className="payment-banner-content">
+                        <span className="payment-banner-icon">✓</span>
+                        <div className="payment-banner-text">
+                            <strong>Payment successful!</strong>
+                            <span>Please wait while your order is being prepared.</span>
+                        </div>
+                    </div>
+                    <button className="payment-banner-close" onClick={dismissPaymentBanner} aria-label="Dismiss">×</button>
+                </div>
+            )}
+
+            {paymentStatus === 'failed' && (
+                <div className="payment-banner failed">
+                    <div className="payment-banner-content">
+                        <span className="payment-banner-icon">×</span>
+                        <div className="payment-banner-text">
+                            <strong>Payment was not successful.</strong>
+                            <span>Please try again.</span>
+                        </div>
+                    </div>
+                    <button className="payment-banner-close" onClick={dismissPaymentBanner} aria-label="Dismiss">×</button>
+                </div>
+            )}
+
             <h1 style={{ textAlign: 'center' }}>Your Cart</h1>
-            
+
             {orders.length > 0 ? (
-                <div className="order-list-container">
+                <div className="order-list-container view-cart-list">
                     {orders.map(order => (
                         <OrderCard
                             key={order._id}

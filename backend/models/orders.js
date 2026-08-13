@@ -51,10 +51,20 @@ const OrderSchema = new Schema({
         enum: [
             'Pending',         // Student just placed the order
             'Accepted',        // Mess staff accepted the order
-            'Rejected',        // Mess staff rejected the order 
+            'Paid',            // Student paid for the accepted order
+            'Rejected',        // Mess staff rejected the order
             'Ready'            // Order is ready for pickup
         ],
         default: 'Pending'
+    },
+    razorpayOrderId: {
+        type: String
+    },
+    razorpayPaymentId: {
+        type: String
+    },
+    paidAt: {
+        type: Date
     },
     specialInstructions: {
         type: String,

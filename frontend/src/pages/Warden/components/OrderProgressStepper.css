@@ -1,0 +1,61 @@
+.order-progress-stepper {
+    margin-bottom: 14px;
+}
+
+.stepper-track {
+    display: flex;
+    align-items: center;
+}
+
+.stepper-dot {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    border-radius: 50%;
+    background-color: #dcdcdc;
+    transition: background-color 0.3s ease;
+}
+
+.stepper-dot.filled {
+    background-color: #2f6fed;
+}
+
+.stepper-line {
+    flex: 1;
+    height: 3px;
+    background-color: #dcdcdc;
+    transition: background-color 0.3s ease;
+}
+
+.stepper-line.filled {
+    background-color: #2f6fed;
+}
+
+.stepper-labels {
+    display: flex;
+    margin-top: 6px;
+}
+
+.stepper-label {
+    flex: 1;
+    font-size: 0.68rem;
+    color: #999;
+    transition: color 0.3s ease;
+}
+
+.stepper-label.active {
+    color: #2f6fed;
+    font-weight: 600;
+}
+
+.stepper-label:first-child {
+    text-align: left;
+}
+
+.stepper-label:last-child {
+    text-align: right;
+}
+
+.stepper-label:not(:first-child):not(:last-child) {
+    text-align: center;
+}

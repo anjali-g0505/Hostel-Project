@@ -11,6 +11,7 @@
 .order-card:has(.accepted) { border-left-color: #28a745; }
 .order-card:has(.pending) { border-left-color: #ffc107; }
 .order-card:has(.rejected) { border-left-color: #dc3545; }
+.order-card:has(.paid) { border-left-color: #17a2b8; }
 
 
 .order-cat-tag {
@@ -89,4 +90,5 @@
 .accepted:hover { transform: scale(1.05); background-color: #218838; }
 
 .pending { background-color: #fff3cd; color: #856404; cursor: not-allowed; }
-.rejected { background-color: #f8d7da; color: #721c24; cursor: not-allowed; }
+.rejected { background-color: #dc3545; color: #ffffff; cursor: not-allowed; }
+.paid { background-color: #d1ecf1; color: #0c5460; cursor: not-allowed; }

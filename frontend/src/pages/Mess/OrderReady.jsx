@@ -26,7 +26,7 @@ function OrderReady() {
                 return navigate('/login');
             }
             
-            const url = `http://localhost:8080/api/${category}/get-accepted-orders`; 
+            const url = `http://localhost:8080/api/${category}/get-paid-orders`;
             const response = await fetch(url, { 
                 method: "GET",
                 headers: {

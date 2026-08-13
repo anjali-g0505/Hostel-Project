@@ -108,20 +108,26 @@ const requestOrder= async (req,res)=>{
 const changeOrderStatus = async(req,res)=>{
     try{
         let {status} = req.body;
-        let {id} = req.params; 
-        if (!['Accepted', 'Rejected', 'Ready'].includes(status)) 
+        let {id} = req.params;
+        if (!['Accepted', 'Rejected', 'Ready'].includes(status))
             {
                 return res.status(400).json({ //Bad request
                     message: 'Invalid status.',
-                    success: false 
+                    success: false
                 });
             }
         let order = await OrderModel.findById(id);
         if(!order){
             return res.status(404).json({ //Not found
                     message: 'Order not found for the given id.',
-                    success: false 
+                    success: false
                 });
+        }
+        if (status === 'Ready' && order.status !== 'Paid') {
+            return res.status(400).json({
+                message: 'Order must be paid before it can be marked ready.',
+                success: false
+            });
         }
         order.status=status;
         await order.save();
@@ -140,28 +146,28 @@ const changeOrderStatus = async(req,res)=>{
     }
 }
 
-const getAccepted = async (req, res) => {
+const getPaidOrders = async (req, res) => {
     try {
-    const { category } = req.params; 
-    let orders = await OrderModel.find({category, status: 'Accepted' }).populate('studentID', 'name role mobile').sort({ createdAt: -1 });
+    const { category } = req.params;
+    let orders = await OrderModel.find({category, status: 'Paid' }).populate('studentID', 'name role mobile').sort({ createdAt: -1 });
 
     if (orders.length === 0) {
       return res.status(200).json({
-        message: "No orders accepted today.",
+        message: "No paid orders yet.",
         success: true,
         orders
       });
     }
 
     res.status(200).json({
-      message: "Accepted items viewed successfully.",
+      message: "Paid orders viewed successfully.",
       success: true,
       orders:orders
     });
     } catch (error) {
-    console.error("Accepted items Error:", error);
+    console.error("Paid orders Error:", error);
     res.status(500).json({
-      message: "Could not retrieve accepted items. Internal Server Error",
+      message: "Could not retrieve paid orders. Internal Server Error",
       success: false,
     });
   }
@@ -189,7 +195,7 @@ const viewMyOrders = async(req,res)=>{
 const orderLog = async(req,res) => {
     try {
     const { category } = req.params; 
-    let orders = await OrderModel.find({category, status: { $in: ['Accepted', 'Ready'] }}).populate('studentID', 'name role mobile').sort({ createdAt: -1 });
+    let orders = await OrderModel.find({category, status: { $in: ['Accepted', 'Paid', 'Ready'] }}).populate('studentID', 'name role mobile').sort({ createdAt: -1 });
 
     if (orders.length === 0) {
       return res.status(200).json({
@@ -217,7 +223,7 @@ module.exports = {
     getPendingOrders,
     requestOrder,
     changeOrderStatus,
-    getAccepted,
+    getPaidOrders,
     orderLog,
     viewMyOrders
 };
