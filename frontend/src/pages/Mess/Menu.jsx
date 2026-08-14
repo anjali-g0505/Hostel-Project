@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import { handleError, handleSuccess } from '../utils.js'; 
+import { handleError, handleSuccess } from '../utils.js';
 import DisplayMenuItemCard from './Components/DisplayMenuItemCard.jsx';
-import './Menu.css'; 
+import { socket } from '../../socket';
+import './Menu.css';
 
 function Menu() {
     const [activeCategory, setActiveCategory] = useState('breakfast');
@@ -16,6 +17,35 @@ function Menu() {
     useEffect(() => {
         fetchMenuItems(activeCategory);
         setOrderArr({}); // Reset cart when switching categories
+    }, [activeCategory]);
+
+    // Live menu updates. We stay subscribed regardless of which category is displayed
+    // (menu-subscribers is one shared room) and filter/merge by category client-side.
+    useEffect(() => {
+        const handleMenuUpdated = ({ category, item, action }) => {
+            if (category !== activeCategory) return; //if user is browsing breakfast then an update on dinner wont cause the ui to change, but if the user is browsing breakfast and an update on breakfast happens then the ui should change
+            setAvailableItems(prev => {
+                if (action === 'deleted' || item.status === 'Unavailable') {
+                    return prev.filter(i => i._id !== item._id);
+                }
+                const exists = prev.some(i => i._id === item._id);
+                if (exists) {
+                    return prev.map(i => i._id === item._id ? item : i);
+                }
+                return [...prev, item];
+            });
+        };
+
+        // Missed events aren't replayed, so resync with a fresh fetch after a reconnect.
+        const handleReconnect = () => fetchMenuItems(activeCategory); //everytime a connection is established, fetch the menu items again to get the latest menu items, this can be a simple reconnect after the client was disconnected or a new connection after the user logged in and the socket was connected for the first time
+
+        socket.on('menu:updated', handleMenuUpdated); //on the already-open socket connection, listen for menu updates like an eventListener and if the event is menu:updated then call function handleMenuUpdated
+        socket.on('connect', handleReconnect);
+        return () => { //cleanup function to remove the event listeners when the component unmounts or when the activeCategory changes
+            socket.off('menu:updated', handleMenuUpdated); //very important since if the current category is dinner and the handleMenuUpdated function for breakfast is still active since it wasnt removed, then the first condition would register breakfast as teh active category and wont make updates to the ui fro the dinner  
+             //every tab switch adds a new listener without removing the old one.
+            socket.off('connect', handleReconnect);
+        };
     }, [activeCategory]);
 
     const fetchMenuItems = async (category) => {

@@ -2,6 +2,7 @@ const instance = require("../razorpayConfig.js");
 require('dotenv').config();
 const crypto = require("crypto");
 const OrderModel = require("../models/orders");
+const { emitToMessRoom, emitToUser } = require("../socket/socketEmitter");
 
 const FRONTEND_URL = "http://localhost:5173";
 
@@ -48,7 +49,7 @@ const getKey=async(req,res)=>{
 const paymentVerification = async (req, res) => {
     const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
 
-    const order = await OrderModel.findOne({ razorpayOrderId: razorpay_order_id }).populate('studentID', 'role');
+    const order = await OrderModel.findOne({ razorpayOrderId: razorpay_order_id }).populate('studentID', 'name role mobile');
     const viewCartPath = order?.studentID?.role === 'student' ? '/student/view-cart' : '/warden/view-cart';
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -65,6 +66,9 @@ const paymentVerification = async (req, res) => {
         order.razorpayPaymentId = razorpay_payment_id;
         order.paidAt = new Date();
         await order.save();
+
+        emitToMessRoom('order:paid', order);
+        emitToUser(order.studentID._id.toString(), 'order:paid', order);
 
         return res.redirect(`${FRONTEND_URL}${viewCartPath}?payment=success`);
     }

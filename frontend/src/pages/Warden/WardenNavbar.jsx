@@ -2,6 +2,7 @@ import React, { useState } from 'react'; // Import useState
 import { Link, useNavigate } from 'react-router-dom';
 import coepLogo from '../../assets/COEP-LOGO.png'; // Adjusted path (go up two levels)
 import '../Navbar.css'; // Adjusted path (go up one level)
+import { disconnectSocket } from '../../socket';
 
 function WardenNavbar() {
     const navigate = useNavigate();
@@ -11,6 +12,7 @@ function WardenNavbar() {
         localStorage.removeItem('token');
         localStorage.removeItem('loggedInUser');
         localStorage.removeItem('role');
+        disconnectSocket();
         navigate('/login');
     };
 

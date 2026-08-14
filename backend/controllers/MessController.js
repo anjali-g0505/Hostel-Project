@@ -1,5 +1,6 @@
 const MenuItemModel = require("../models/menu");
 const OrderModel = require("../models/orders");
+const { emitToMenuSubscribers } = require("../socket/socketEmitter");
 
 const addMenuItem = async (req, res) => {
     try {
@@ -23,6 +24,8 @@ const addMenuItem = async (req, res) => {
             message:"Menu item added successfully.",
             success:true
         })
+
+        emitToMenuSubscribers('menu:updated', { category, item: MenuItem, action: 'added' });
     } catch (error) {
         console.error("Menu Error:", error);
         res.status(500).json({ message: 'Internal Server Error', success: false });
@@ -44,6 +47,8 @@ const deleteMenuItem = async (req, res) => {
             message: 'Menu Deleted!',
             success: true
         });
+
+        emitToMenuSubscribers('menu:updated', { category: deletedMenu.category, item: deletedMenu, action: 'deleted' });
     } catch (error) {
         console.error("Delete Menu Error:", error);
         res.status(500).json({ message: 'Internal Server Error', success: false });
@@ -70,10 +75,13 @@ const changeItemStatus = async(req,res)=>{
         }
         item.status=newStatus;
         await item.save();
-        return res.status(200).json({
+        res.status(200).json({
             message:`Status changed successfully to ${newStatus}.`,
             success:true
         });
+
+        emitToMenuSubscribers('menu:updated', { category: item.category, item, action: 'status-changed' });
+        return;
     }
     catch(err){
         console.error("Change Status Error:", err);

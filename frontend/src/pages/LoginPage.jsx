@@ -5,8 +5,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import './Login.css'; 
 import { useForm } from 'react-hook-form'; // Import useForm
 
-import loginBgImage from '../assets/hostel-2.jpeg'; 
+import loginBgImage from '../assets/hostel-2.jpeg';
 import { handleError } from './utils';
+import { connectSocket } from '../socket';
 
 function LoginPage() {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -33,6 +34,7 @@ function LoginPage() {
                 localStorage.setItem('token', jwtToken);
                 localStorage.setItem('loggedInUser', name);
                 localStorage.setItem('role', role);
+                connectSocket();
                 if(role=='student'){
                     setTimeout(() => navigate('/student/dashboard'), 2000); // Navigate to dashboard
                 }

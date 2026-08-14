@@ -1,6 +1,7 @@
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
+import { connectSocket } from './socket'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import LandingPage from './pages/LandingPage'
@@ -41,6 +42,11 @@ function PublicLayout() {
 }
 
 function App() {
+
+  useEffect(() => {
+    // Covers page refresh / direct navigation while an existing session's token is still in localStorage.
+    connectSocket();
+  }, []); //runs on the first render
 
   return (
     <>

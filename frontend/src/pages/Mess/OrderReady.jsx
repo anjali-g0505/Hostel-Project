@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { handleSuccess, handleError } from '../utils'; 
-import AcceptedOrderCard from '../Mess/Components/AcceptedOrderCard'; 
-import './OrderReady.css'; 
+import { handleSuccess, handleError } from '../utils';
+import AcceptedOrderCard from '../Mess/Components/AcceptedOrderCard';
+import { socket } from '../../socket';
+import './OrderReady.css';
 
 function OrderReady() {
     const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +15,32 @@ function OrderReady() {
 
     useEffect(() => {
         fetchAcceptedOrders(activeCategory);
-    }, [activeCategory]); 
+    }, [activeCategory]);
+
+    // Live updates from mess-room: orders that just got paid appear instantly, and orders
+    // marked Ready (from this device or another) disappear from the list instantly.
+    useEffect(() => {
+        const handleOrderPaid = (order) => {
+            if (order.category !== activeCategory) return;
+            setAcceptedOrders(prev => prev.some(o => o._id === order._id) ? prev : [...prev, order]);
+        };
+
+        const handleOrderReady = (order) => {
+            setAcceptedOrders(prev => prev.filter(o => o._id !== order._id));
+        };
+
+        // Missed events aren't replayed, so resync with a fresh fetch after a reconnect.
+        const handleReconnect = () => fetchAcceptedOrders(activeCategory);
+
+        socket.on('order:paid', handleOrderPaid);
+        socket.on('order:ready', handleOrderReady);
+        socket.on('connect', handleReconnect);
+        return () => {
+            socket.off('order:paid', handleOrderPaid);
+            socket.off('order:ready', handleOrderReady);
+            socket.off('connect', handleReconnect);
+        };
+    }, [activeCategory]);
 
     const fetchAcceptedOrders = async (category) => {
         setIsLoading(true);

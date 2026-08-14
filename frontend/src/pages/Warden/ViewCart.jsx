@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
 import OrderCard from './components/OrderCard.jsx' // Corrected component name
+import { socket } from '../../socket';
 import './ViewCart.css';
 
 
@@ -15,6 +16,32 @@ function ViewCart() {
 
     useEffect(() => {
         fetchOrders();
+    }, []);
+
+    // Live order status updates on this student/warden's personal room, so the cart
+    // reflects accept/reject/paid/ready transitions without needing a manual refresh.
+    useEffect(() => {
+        const handleOrderUpdate = (updatedOrder) => {
+            setOrders(prev => prev.map(order =>
+                order._id === updatedOrder._id ? { ...order, status: updatedOrder.status } : order
+            ));
+        };
+
+        // Missed events aren't replayed, so resync with a fresh fetch after a reconnect.
+        const handleReconnect = () => fetchOrders();
+
+        socket.on('order:accepted', handleOrderUpdate);
+        socket.on('order:rejected', handleOrderUpdate);
+        socket.on('order:paid', handleOrderUpdate);
+        socket.on('order:ready', handleOrderUpdate);
+        socket.on('connect', handleReconnect);
+        return () => {
+            socket.off('order:accepted', handleOrderUpdate);
+            socket.off('order:rejected', handleOrderUpdate);
+            socket.off('order:paid', handleOrderUpdate);
+            socket.off('order:ready', handleOrderUpdate);
+            socket.off('connect', handleReconnect);
+        };
     }, []);
 
     const dismissPaymentBanner = () => {

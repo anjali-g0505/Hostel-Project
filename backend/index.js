@@ -1,8 +1,10 @@
 const express = require('express');
 const app = express();
+const http = require('http');
 const bodyParser = require('body-parser');
 const Razorpay = require('razorpay');
-const cors = require('cors'); 
+const cors = require('cors');
+const { initSocket } = require('./socket/socketServer.js');
 const AuthRouter = require('./routes/AuthRouter.js');
 //Role-based Routers
 const StudentRouter=require('./routes/StudentRouter.js');
@@ -44,7 +46,10 @@ app.use('/api', OrderRouter);
 app.use('/api', PaymentRouter);
 
 
-app.listen(PORT, ()=>{
+const server = http.createServer(app);
+initSocket(server);
+
+server.listen(PORT, ()=>{
     console.log(`Server is running on ${PORT}`)
 })
 

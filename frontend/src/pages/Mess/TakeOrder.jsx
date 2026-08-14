@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { handleSuccess, handleError } from '../utils'; 
-import PendingOrderCard from '../Mess/Components/PendingOrderCard'; 
-import './TakeOrder.css'; 
+import { handleSuccess, handleError } from '../utils';
+import PendingOrderCard from '../Mess/Components/PendingOrderCard';
+import { socket } from '../../socket';
+import './TakeOrder.css';
 
 function TakeOrder() {
     const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +15,35 @@ function TakeOrder() {
 
     useEffect(() => {
         fetchPendingOrders(activeCategory);
-    }, [activeCategory]); 
+    }, [activeCategory]);
+
+    // Live updates from mess-room: new orders appear instantly, and orders actioned
+    // from another mess device (or this one) disappear from the pending list instantly.
+    useEffect(() => {
+        const handleOrderPending = (order) => {
+            if (order.category !== activeCategory) return;
+            setPendingOrders(prev => prev.some(o => o._id === order._id) ? prev : [...prev, order]); //prev is the previous state - return as it is, [...prev, order] - add the new order to the previous state array.
+            //.some() returns true if any element in prev state satisfies the condition, checking whether an order with this same _id already exists in the current pendingOrders array (o).
+        };
+
+        const handleOrderActioned = (order) => {
+            setPendingOrders(prev => prev.filter(o => o._id !== order._id));
+        };
+
+        // Missed events aren't replayed, so resync with a fresh fetch after a reconnect.
+        const handleReconnect = () => fetchPendingOrders(activeCategory);
+
+        socket.on('order:pending', handleOrderPending);
+        socket.on('order:accepted', handleOrderActioned);
+        socket.on('order:rejected', handleOrderActioned);
+        socket.on('connect', handleReconnect);
+        return () => {
+            socket.off('order:pending', handleOrderPending);
+            socket.off('order:accepted', handleOrderActioned);
+            socket.off('order:rejected', handleOrderActioned);
+            socket.off('connect', handleReconnect);
+        };
+    }, [activeCategory]);
 
     const fetchPendingOrders = async (category) => {
         setIsLoading(true);

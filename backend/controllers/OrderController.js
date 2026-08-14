@@ -1,5 +1,6 @@
 const MenuItemModel = require("../models/menu");
 const OrderModel = require("../models/orders");
+const { emitToMessRoom, emitToUser } = require("../socket/socketEmitter");
 
 const getPendingOrders=async(req,res)=>{
     try {
@@ -99,6 +100,9 @@ const requestOrder= async (req,res)=>{
             order: newOrder
         });
 
+        await newOrder.populate('studentID', 'name role mobile');
+        emitToMessRoom('order:pending', newOrder);
+
     } catch (err) {
         console.error("Create Order Error:", err);
         res.status(500).json({ success: false, message: "Internal Server Error." });
@@ -116,26 +120,41 @@ const changeOrderStatus = async(req,res)=>{
                     success: false
                 });
             }
-        let order = await OrderModel.findById(id);
+
+        // Ready requires the order to currently be Paid; Accepted/Rejected require it to currently be Pending.
+        // The find + update happens atomically so that when multiple mess devices race to action the
+        // same order, only the first write succeeds - everyone else gets a 409 instead of silently overwriting.
+        const requiredCurrentStatus = status === 'Ready' ? 'Paid' : 'Pending';
+        let order = await OrderModel.findOneAndUpdate(
+            { _id: id, status: requiredCurrentStatus },
+            { status },
+            { new: true }
+        );
+
         if(!order){
-            return res.status(404).json({ //Not found
-                    message: 'Order not found for the given id.',
-                    success: false
-                });
-        }
-        if (status === 'Ready' && order.status !== 'Paid') {
-            return res.status(400).json({
-                message: 'Order must be paid before it can be marked ready.',
+            const existingOrder = await OrderModel.findById(id);
+            if(!existingOrder){
+                return res.status(404).json({ //Not found
+                        message: 'Order not found for the given id.',
+                        success: false
+                    });
+            }
+            return res.status(409).json({ //Conflict
+                message: 'Order already actioned',
                 success: false
             });
         }
-        order.status=status;
-        await order.save();
+
         res.status(200).json({
                 message: `Status changed successfully to ${status}`,
                 success: true,
-                order: order 
+                order: order
             });
+
+        await order.populate('studentID', 'name role mobile');
+        const eventName = `order:${status.toLowerCase()}`;
+        emitToMessRoom(eventName, order);
+        emitToUser(order.studentID._id.toString(), eventName, order);
     }
     catch(err){
         console.error("Change Status Error:", err);
