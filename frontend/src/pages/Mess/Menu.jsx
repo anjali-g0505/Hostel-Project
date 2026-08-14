@@ -55,11 +55,17 @@ function Menu() {
             if (!token) return navigate('/login');
 
             const API_URL = `http://localhost:8080/api/${category}/get-available-items`;
-            const response = await fetch(API_URL, { 
+            const response = await fetch(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            const result = await response.json(); 
+            if (response.status === 401 || response.status === 403) {
+                handleError("Session expired. Please log in again.");
+                localStorage.clear();
+                return navigate('/login');
+            }
+
+            const result = await response.json();
             if (result.success) {
                 setAvailableItems(result.items);
             } else {
@@ -110,9 +116,15 @@ function Menu() {
                 body: JSON.stringify({
                     items: itemsToSubmit,
                     specialInstructions: specInstruction,
-                    category: activeCategory 
+                    category: activeCategory
                 })
             });
+
+            if (response.status === 401 || response.status === 403) {
+                handleError("Session expired. Please log in again.");
+                localStorage.clear();
+                return navigate('/login');
+            }
 
             const result = await response.json();
             if (result.success) {

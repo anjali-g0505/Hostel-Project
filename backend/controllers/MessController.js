@@ -5,6 +5,12 @@ const { emitToMenuSubscribers } = require("../socket/socketEmitter");
 const addMenuItem = async (req, res) => {
     try {
         const {category, name, price}=req.body;
+        if (price === undefined || price === null || price === '' || isNaN(price) || price < 0) {
+            return res.status(400).json({
+                message: 'A valid price is required.',
+                success: false
+            });
+        }
         const menuItem=await MenuItemModel.findOne({category, name});
         if(menuItem){
             return res.status(409).json({

@@ -301,12 +301,13 @@ function ManageMenu() {
                         />
                         {errors.newItemName && <span className="error-message" style={{ color: 'red', fontSize: '1rem', margin: '5px 0 0' }}>{errors.newItemName.message}</span>}
                     </div>
-                    <h4 style={{color:'#001540', fontSize: '1.3rem'}}>किंमत (पर्यायी)</h4>
+                    <h4 style={{color:'#001540', fontSize: '1.3rem'}}>किंमत</h4>
                     <div className="form-input-group">
-                        <input 
+                        <input
                             type="number"
                             placeholder="(e.g. 30)"
                             {...register("price", {
+                                required: "Price is required",
                                 valueAsNumber: true, // Converts input to a number
                                 min: { value: 0, message: "Price must be 0 or more" }
                             })}

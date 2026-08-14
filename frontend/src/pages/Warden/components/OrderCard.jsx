@@ -1,12 +1,14 @@
 import React from 'react';
 import './OrderCard.css';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../../utils';
 import OrderProgressStepper from './OrderProgressStepper';
 
 function OrderCard(props) {
     const [isLoading, setIsLoading]= useState(false);
+    const navigate = useNavigate();
     const formatDate = (dateString) => {
         if (!dateString) return "";
         return new Date(dateString).toLocaleDateString('en-IN') + ' ' + 
@@ -29,6 +31,13 @@ const handlePayment = async () => {
         const keyResponse = await fetch("http://localhost:8080/api/getKey", {
             headers: { 'Authorization': `Bearer ${token}` }
         });
+
+        if (keyResponse.status === 401 || keyResponse.status === 403) {
+            handleError("Session expired. Please log in again.");
+            localStorage.clear();
+            return navigate('/login');
+        }
+
         const keyResult = await keyResponse.json();
         const key = keyResult.key;
         console.log("Key receieved");
@@ -45,6 +54,12 @@ const handlePayment = async () => {
                 amount: props.totalAmount
             })
         });
+
+        if (paymentResponse.status === 401 || paymentResponse.status === 403) {
+            handleError("Session expired. Please log in again.");
+            localStorage.clear();
+            return navigate('/login');
+        }
 
         const paymentResult = await paymentResponse.json();
         console.log("response receieved");

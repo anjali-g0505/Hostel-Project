@@ -20,7 +20,7 @@ const MenuItemSchema = new Schema({
     },
     price: {
         type: Number,
-        default: null
+        required: true
     }
 }, { timestamps: true });
 
