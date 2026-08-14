@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const { verifyToken } = require('../utils/authUtils');
 const ensureAuthenticated= (req,res,next)=>{
     const auth=req.headers['authorization'];
     if(!auth || !auth.startsWith('Bearer ')){
@@ -6,7 +6,7 @@ const ensureAuthenticated= (req,res,next)=>{
     }
     try{
         const token = auth.split(' ')[1];
-        const decoded=jwt.verify(token, process.env.JWT_SECRET); 
+        const decoded=verifyToken(token);
         req.user=decoded; //very imp-Allows us to prevent database calls about the user at several levels
         next();
     }catch(err){
