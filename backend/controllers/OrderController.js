@@ -168,7 +168,9 @@ const changeOrderStatus = async(req,res)=>{
 const getPaidOrders = async (req, res) => {
     try {
     const { category } = req.params;
-    let orders = await OrderModel.find({category, status: 'Paid' }).populate('studentID', 'name role mobile').sort({ createdAt: -1 });
+    // Includes 'Ready' too, so orders stay visible on this tab after being marked ready -
+    // the mess can still verify them here when the student/warden comes to collect.
+    let orders = await OrderModel.find({category, status: { $in: ['Paid', 'Ready'] } }).populate('studentID', 'name role mobile').sort({ createdAt: -1 });
 
     if (orders.length === 0) {
       return res.status(200).json({

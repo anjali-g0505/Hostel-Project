@@ -19,9 +19,8 @@ const MenuItemSchema = new Schema({
         default: 'Unavailable' 
     },
     price: {
-        type: Number,     
-        required: true,  
-        default: null     
+        type: Number,
+        default: null
     }
 }, { timestamps: true });
 

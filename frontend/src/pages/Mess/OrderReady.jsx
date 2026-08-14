@@ -18,7 +18,8 @@ function OrderReady() {
     }, [activeCategory]);
 
     // Live updates from mess-room: orders that just got paid appear instantly, and orders
-    // marked Ready (from this device or another) disappear from the list instantly.
+    // marked Ready (from this device or another) update in place - they stay visible here
+    // so the mess can still verify them when the order is collected.
     useEffect(() => {
         const handleOrderPaid = (order) => {
             if (order.category !== activeCategory) return;
@@ -26,7 +27,12 @@ function OrderReady() {
         };
 
         const handleOrderReady = (order) => {
-            setAcceptedOrders(prev => prev.filter(o => o._id !== order._id));
+            if (order.category !== activeCategory) return;
+            setAcceptedOrders(prev => {
+                const exists = prev.some(o => o._id === order._id);
+                if (exists) return prev.map(o => o._id === order._id ? order : o);
+                return [...prev, order];
+            });
         };
 
         // Missed events aren't replayed, so resync with a fresh fetch after a reconnect.
@@ -118,10 +124,10 @@ function OrderReady() {
 
             if (result.success) {
                 handleSuccess(result.message || `Order marked as ${newStatus}`);
-                
-                // This removes it from the Accepted list instantly.
-                setAcceptedOrders(prevOrders => 
-                    prevOrders.filter(order => order._id !== id)
+
+                // Keep it in the list, marked as Ready, so it stays visible for pickup verification.
+                setAcceptedOrders(prevOrders =>
+                    prevOrders.map(order => order._id === id ? { ...order, status: newStatus } : order)
                 );
             } else {
                 handleError(result.message || "Could not update status.");
@@ -169,6 +175,7 @@ function OrderReady() {
                                 items={order.items}
                                 totalAmount={order.totalAmount}
                                 instructions={order.specialInstructions}
+                                status={order.status}
                                 onStatusToggle={handleStatusToggle}
                             />
                         ))}

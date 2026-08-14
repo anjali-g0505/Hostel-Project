@@ -136,3 +136,11 @@
     color: #10392d;
 }
 .btn-ready-order:hover { background-color: #B2DFDB; }
+
+.btn-ready-order.ready-marked {
+    display: inline-block;
+    background-color: #C8E6C9;
+    color: #1b5e20;
+    cursor: default;
+}
+.btn-ready-order.ready-marked:hover { background-color: #C8E6C9; }

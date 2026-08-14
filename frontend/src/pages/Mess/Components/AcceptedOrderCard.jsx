@@ -47,7 +47,11 @@ function AcceptedOrderCard(props) {
                     Total: <strong>₹{props.totalAmount}</strong>
                 </span>
                 <div className="order-actions">
-                    <button className="btn-ready-order" onClick={() => props.onStatusToggle(props.id, 'Ready')}>ऑर्डर तयार</button>
+                    {props.status === 'Ready' ? (
+                        <span className="btn-ready-order ready-marked">✓ तयार झाले</span>
+                    ) : (
+                        <button className="btn-ready-order" onClick={() => props.onStatusToggle(props.id, 'Ready')}>ऑर्डर तयार</button>
+                    )}
                 </div>
             </div>
         </div>
