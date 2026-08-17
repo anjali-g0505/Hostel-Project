@@ -35,7 +35,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
     // While NODE_ENV is 'development', never call SES - log what would have been sent instead.
     // Flip this once the pipeline is ready to actually send.
     if (process.env.NODE_ENV === 'development') {
-        console.log('--- [DEV MODE] Email not sent - logging instead ---');
+        console.log('(Dev mode) Email not sent - logging instead ---');
         console.log('To:', to);
         console.log('Subject:', subject);
         if (text) console.log('Text Body:', text);

@@ -44,7 +44,19 @@ const UserSchema = new mongoose.Schema({
         // Restricts the 'role' field to only these values
         enum: ['student', 'mess', 'warden'],
         default: 'student'  // Automatically sets new users to 'student'
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true }); // Automatically adds 'createdAt' and 'updatedAt' fields
+
+// Auto-deletes unverified accounts 24h after creation; verified accounts are excluded
+// once isVerified flips to true, since they no longer match the partial filter.
+UserSchema.index(
+    { createdAt: 1 },
+    { expireAfterSeconds: 86400, partialFilterExpression: { isVerified: false } }
+);
+
 const UserModel=mongoose.model('User', UserSchema); //Creates a collection
-module.exports = UserModel; 
+module.exports = UserModel;
