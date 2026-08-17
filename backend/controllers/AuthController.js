@@ -7,10 +7,23 @@ const signup = async (req,res)=>{
     try {
         console.log(req.body);  
         const {name, username, email, mobile, password, role} = req.body;
-        const user=await UserModel.findOne({email});
-        
-        if(user){//only checks the email
-            return res.status(409).json({message: 'User already exists, go to login', success: false});//conflict
+        const normalizedUsername = username.toLowerCase();
+        const normalizedEmail = email.toLowerCase();
+
+        const existingUser = await UserModel.findOne({
+            $or: [{ email: normalizedEmail }, { username: normalizedUsername }, { mobile }]
+        });
+
+        if (existingUser) {
+            if (existingUser.email === normalizedEmail) {
+                return res.status(409).json({ message: 'User with that email id already exists', success: false }); //conflict
+            }
+            if (existingUser.username === normalizedUsername) {
+                return res.status(409).json({ message: 'Username already exists', success: false }); //conflict
+            }
+            if (existingUser.mobile === mobile) {
+                return res.status(409).json({ message: 'Phone number already exists', success: false }); //conflict
+            }
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new UserModel({
