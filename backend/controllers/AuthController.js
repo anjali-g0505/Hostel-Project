@@ -21,13 +21,13 @@ const signup = async (req,res)=>{
 
         if (existingUser) {
             if (existingUser.email === normalizedEmail) {
-                return res.status(409).json({ message: 'User with that email id already exists', success: false }); //conflict
+                return res.status(409).json({ message: 'User with that email id already exists', success: false }); 
             }
             if (existingUser.username === normalizedUsername) {
-                return res.status(409).json({ message: 'Username already exists', success: false }); //conflict
+                return res.status(409).json({ message: 'Username already exists', success: false }); 
             }
             if (existingUser.mobile === mobile) {
-                return res.status(409).json({ message: 'Phone number already exists', success: false }); //conflict
+                return res.status(409).json({ message: 'Phone number already exists', success: false }); 
             }
         }
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -40,52 +40,142 @@ const signup = async (req,res)=>{
             role,
             isVerified: false
         });
-        await newUser.save();
 
-        // OTP is generated only after the User is safely saved
-        const otp = crypto.randomInt(100000, 1000000).toString();
+        try {
+            await newUser.save();
+        } catch (saveErr) {
+            // Safety net in case two signups race past the $or check above and both
+            // reach save() - Mongo's unique indexes are the real source of truth here.
+            if (saveErr.code === 11000) {
+                const field = Object.keys(saveErr.keyPattern || {})[0];
+                const duplicateFieldMessages = {
+                    email: 'User with that email id already exists',
+                    username: 'Username already exists',
+                    mobile: 'Phone number already exists'
+                };
+                return res.status(409).json({
+                    message: duplicateFieldMessages[field] || 'User already exists',
+                    success: false
+                });
+            }
+            throw saveErr;
+        }
+
+        // No OTP/email here by design - the frontend triggers /send-otp itself right
+        // after this succeeds, and that's the same endpoint the "Resend code" button uses.
+        res.status(201).json({ //created
+            success: true,
+            message: 'Signup successful. Please verify your email.',
+            email: newUser.email
+        })
+
+    } catch (error) {
+        console.error("Signup Error:", error);
+        console.log("Errorrr", error);
+        res.status(500).json({ //Internal Server Error
+            message:'Internal Server Error',
+            success:false
+        })
+    }
+}
+
+const sendOtp = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const normalizedEmail = (email || '').trim().toLowerCase();
+
+        const user = await UserModel.findOne({ email: normalizedEmail });
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'No account found with that email.' });
+        }
+        if (user.isVerified) {
+            return res.status(400).json({ success: false, message: 'This account is already verified.' });
+        }
+
+        // Invalidates any previously issued code - only the freshest OTP is ever valid.
+        await OtpModel.deleteMany({ userId: user._id, purpose: 'signup' });
+
+        const otp = crypto.randomInt(100000, 1000000).toString(); // 6-digit otp
         const otpHash = await bcrypt.hash(otp, 10);
         const expiresAt = new Date(Date.now() + otp_ttl);
 
-        const otpDoc = await OtpModel.create({
-            userId: newUser._id,
+        await OtpModel.create({
+            userId: user._id,
             otpHash,
             purpose: 'signup',
+            attempts: 0,
             expiresAt
         });
 
-        let emailSent = true;
         try {
             await sendEmail({
-                to: newUser.email,
+                to: user.email,
                 subject: 'Verify your account',
                 text: `Your verification code is ${otp}. It expires in 3 minutes.`,
                 html: `<p>Your verification code is <strong>${otp}</strong>. It expires in 3 minutes.</p>`
             });
         } catch (emailErr) {
-            // The user and OTP are already saved - a failed send shouldn't fail the whole signup.
-            // The frontend should fall back to the resend-verification endpoint in this case.
-            console.error("Signup verification email failed:", emailErr);
-            emailSent = false;
+            console.error("Send OTP email failed:", emailErr);
+            return res.status(500).json({ success: false, message: 'Could not send verification email. Please try again.' });
         }
 
-        res.status(201).json({ //created
-            success: true,
-            message: emailSent
-                ? 'Signup successful. Please check your email for the OTP.'
-                : 'Account created, but the verification email could not be sent. Please use the resend verification endpoint.',
-            userId: newUser._id,
-            expiresAt: otpDoc.expiresAt,
-            emailSent
-        })
+        return res.status(200).json({ success: true, expiresAt });
 
     } catch (error) {
-        console.error("Signup Error:", error); 
-        console.log("Errorrr", error);
-        res.status(500).json({ //Internal Server Error
-            message:'Internal Server Error',
-            success:false
-        })        
+        console.error("Send OTP Error:", error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error. Could not send OTP.' });
+    }
+}
+
+const verifyOtp = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+        const normalizedEmail = (email || '').trim().toLowerCase();
+
+        const user = await UserModel.findOne({ email: normalizedEmail });
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'No account found with that email.' });
+        }
+        if (user.isVerified) {
+            return res.status(400).json({ success: false, message: 'This account is already verified.' });
+        }
+
+        const otpDoc = await OtpModel.findOne({ userId: user._id, purpose: 'signup' });
+        if (!otpDoc) {
+            return res.status(400).json({ success: false, message: 'No verification code found. Please request a new code.' });
+        }
+
+        if (Date.now() > otpDoc.expiresAt.getTime()) {
+            await OtpModel.deleteOne({ _id: otpDoc._id });
+            return res.status(410).json({ success: false, message: 'This code has expired. Please request a new code.' }); //Gone
+        }
+
+        if (otpDoc.attempts >= 5) {
+            await OtpModel.deleteOne({ _id: otpDoc._id });
+            return res.status(429).json({ success: false, message: 'Too many incorrect attempts. Please request a new code.' });
+        }
+
+        const isMatch = await bcrypt.compare(otp || '', otpDoc.otpHash);
+        if (!isMatch) {
+            otpDoc.attempts += 1;
+            await otpDoc.save();
+            const attemptsRemaining = 5 - otpDoc.attempts;
+            return res.status(400).json({
+                success: false,
+                message: `Incorrect code. ${attemptsRemaining} attempt${attemptsRemaining === 1 ? '' : 's'} remaining.`,
+                attemptsRemaining
+            });
+        }
+
+        user.isVerified = true;
+        await user.save();
+        await OtpModel.deleteOne({ _id: otpDoc._id });
+
+        return res.status(200).json({ success: true, message: 'User has been verified, please login.' });
+
+    } catch (error) {
+        console.error("Verify OTP Error:", error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error. Could not verify OTP.' });
     }
 }
 
@@ -131,5 +221,5 @@ const login = async (req,res)=>{
 }
 
 module.exports={
-    signup,login
+    signup,login,sendOtp,verifyOtp
 }

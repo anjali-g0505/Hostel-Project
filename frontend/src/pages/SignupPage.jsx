@@ -37,7 +37,7 @@ function SignupPage() {
             const {success, message, error}=result;
             if(success){
                 handleSuccess(message);
-                setTimeout(() => navigate('/login'), 2000);
+                setTimeout(() => navigate(`/verify-email?email=${encodeURIComponent(data.email)}`), 2000);
             }
             else if(error){
                 const details=error?.details[0].message;
