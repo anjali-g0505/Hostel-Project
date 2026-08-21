@@ -1,4 +1,9 @@
 const Joi = require('joi'); //server-side validation middleware
+
+// Single source of truth for password rules - reused by signup and reset-password so the
+// two never drift apart.
+const passwordSchema = Joi.string().min(6).required();
+
 //whenever a post request is made this checks against the following basic rules
 const signupVal = (req,res,next)=>{
     // console.log("Entered auth validation.");
@@ -10,7 +15,7 @@ const signupVal = (req,res,next)=>{
         mobile: Joi.string().trim().regex(/^[6-9]\d{9}$/).required().messages({
             'string.pattern.base': 'Please enter a valid 10-digit mobile number'
         }),
-        password: Joi.string().min(6).required(),
+        password: passwordSchema,
         role: Joi.string().valid('student', 'mess', 'warden').required()
     });
     const {error}=schema.validate(req.body);
@@ -92,9 +97,49 @@ const applicationVal=(req,res,next)=>{
     next();
 }
 
+const forgotPasswordVal = (req, res, next) => {
+    const schema = Joi.object({
+        email: Joi.string().trim().lowercase().email().required()
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+    }
+    next();
+}
+
+const verifyResetOtpVal = (req, res, next) => {
+    const schema = Joi.object({
+        email: Joi.string().trim().lowercase().email().required(),
+        otp: Joi.string().trim().length(6).pattern(/^\d+$/).required().messages({
+            'string.pattern.base': 'OTP must be a 6-digit number'
+        })
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+    }
+    next();
+}
+
+const resetPasswordVal = (req, res, next) => {
+    const schema = Joi.object({
+        resetToken: Joi.string().required(),
+        newPassword: passwordSchema
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+    }
+    next();
+}
+
 module.exports={
     signupVal,
     loginVal,
     announcementVal,
-    applicationVal
+    applicationVal,
+    forgotPasswordVal,
+    verifyResetOtpVal,
+    resetPasswordVal
 }

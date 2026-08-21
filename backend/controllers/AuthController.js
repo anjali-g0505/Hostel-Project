@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const { sendEmail } = require('../utils/sendEmail');
 
 const otp_ttl = 3 * 60 * 1000; // 3 minutes
+const reset_otp_ttl = 10 * 60 * 1000; // 10 minutes
 
 const signup = async (req,res)=>{
     try {
@@ -179,6 +180,139 @@ const verifyOtp = async (req, res) => {
     }
 }
 
+const forgotPassword = async (req, res) => {
+    // No matter what happens below (user missing, email send failure), the response is the same
+    // To prevent attackers from learning whether an email is registered in the application
+    const genericResponse = { success: true, message: 'If this email is registered, a verification code has been sent.' };
+    try {
+        const { email } = req.body;
+        const normalizedEmail = (email || '').trim().toLowerCase();
+
+        const user = await UserModel.findOne({ email: normalizedEmail });
+        if (!user) {
+            return res.status(200).json(genericResponse);
+        }
+
+        // Invalidates any previously issued reset code - only the freshest OTP is ever valid.
+        await OtpModel.deleteMany({ userId: user._id, purpose: 'password-reset' });
+
+        const otp = crypto.randomInt(100000, 1000000).toString(); // 6-digit otp
+        const otpHash = await bcrypt.hash(otp, 10);
+        const expiresAt = new Date(Date.now() + reset_otp_ttl);
+
+        await OtpModel.create({
+            userId: user._id,
+            otpHash,
+            purpose: 'password-reset',
+            attempts: 0,
+            expiresAt
+        });
+
+        try {
+            await sendEmail({
+                to: user.email,
+                subject: 'Reset your password',
+                text: `Your password reset code is ${otp}. It expires in 10 minutes.`,
+                html: `<p>Your password reset code is <strong>${otp}</strong>. It expires in 10 minutes.</p>`
+            });
+        } catch (emailErr) {
+            // Swallowed on purpose - surfacing this would leak that the email exists.
+            console.error("Forgot Password email failed:", emailErr);
+        }
+
+        return res.status(200).json(genericResponse);
+
+    } catch (error) {
+        console.error("Forgot Password Error:", error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+}
+
+const verifyResetOtp = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+        const normalizedEmail = (email || '').trim().toLowerCase();
+
+        const user = await UserModel.findOne({ email: normalizedEmail });
+        if (!user) {
+            return res.status(400).json({ success: false, message: 'Invalid or expired code. Please request a new one.' });
+        }
+
+        const otpDoc = await OtpModel.findOne({ userId: user._id, purpose: 'password-reset' });
+        if (!otpDoc) {
+            return res.status(400).json({ success: false, message: 'Invalid or expired code. Please request a new one.' });
+        }
+
+        if (Date.now() > otpDoc.expiresAt.getTime()) {
+            await OtpModel.deleteOne({ _id: otpDoc._id });
+            return res.status(410).json({ success: false, message: 'This code has expired. Please request a new code.' }); //Gone
+        }
+
+        if (otpDoc.attempts >= 5) {
+            await OtpModel.deleteOne({ _id: otpDoc._id });
+            return res.status(429).json({ success: false, message: 'Too many incorrect attempts. Please request a new code.' });
+        }
+
+        const isMatch = await bcrypt.compare(otp || '', otpDoc.otpHash);
+        if (!isMatch) {
+            otpDoc.attempts += 1;
+            await otpDoc.save();
+            const attemptsRemaining = 5 - otpDoc.attempts;
+            return res.status(400).json({
+                success: false,
+                message: `Incorrect code. ${attemptsRemaining} attempt${attemptsRemaining === 1 ? '' : 's'} remaining.`,
+                attemptsRemaining
+            });
+        }
+
+        // Single-use - invalidate immediately on a successful match.
+        await OtpModel.deleteOne({ _id: otpDoc._id });
+
+        const resetToken = jwt.sign(
+            { email: user.email },
+            process.env.JWT_RESET_SECRET,
+            { expiresIn: '10m' }
+        );
+
+        return res.status(200).json({ success: true, resetToken });
+
+    } catch (error) {
+        console.error("Verify Reset OTP Error:", error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error. Could not verify code.' });
+    }
+}
+
+const resetPassword = async (req, res) => {
+    const { resetToken, newPassword } = req.body;
+
+    let decoded;
+    try {
+        decoded = jwt.verify(resetToken, process.env.JWT_RESET_SECRET);
+    } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).json({ success: false, message: 'Reset link expired, please request a new one.' });
+        }
+        return res.status(401).json({ success: false, message: 'Invalid request.' });
+    }
+
+    try {
+        const normalizedEmail = (decoded.email || '').trim().toLowerCase();
+        const user = await UserModel.findOne({ email: normalizedEmail });
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid request.' });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        return res.status(200).json({ success: true, message: 'Password updated successfully. Please log in.' });
+
+    } catch (error) {
+        console.error("Reset Password Error:", error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+}
+
 const login = async (req,res)=>{
     try {
         // console.log(req.body);  
@@ -221,5 +355,6 @@ const login = async (req,res)=>{
 }
 
 module.exports={
-    signup,login,sendOtp,verifyOtp
+    signup,login,sendOtp,verifyOtp,
+    forgotPassword,verifyResetOtp,resetPassword
 }
