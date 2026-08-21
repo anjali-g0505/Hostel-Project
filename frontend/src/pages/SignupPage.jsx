@@ -37,7 +37,8 @@ function SignupPage() {
             const {success, message, error}=result;
             if(success){
                 handleSuccess(message);
-                setTimeout(() => navigate(`/verify-email?email=${encodeURIComponent(data.email)}`), 2000);
+                setTimeout(() => navigate(`/verify-email?email=${encodeURIComponent(data.email)}`), 2000); //encodeURIComponent to ensure email is URL-safe (the @ and other special characters are properly encoded and not misparsed by the browser or server). This prevents potential issues with URL parsing 
+                // ensures that the email is correctly passed to the next page.
             }
             else if(error){
                 const details=error?.details[0].message;

@@ -14,8 +14,10 @@ class EmailSendError extends Error {
 // Shared by email verification, resend-verification, and forgot-password,
 // so the SES payload shape and error handling only live in one place.
 const sendEmail = async ({ to, subject, html, text }) => {
-    if (!to || !subject || (!html && !text)) { //need one of html or text 
-        throw new EmailSendError('VALIDATION_ERROR', 'sendEmail requires "to", "subject", and either "html" or "text".'); //trhow is used with a try/catch 
+    console.log(`(sendEmail) NODE_ENV="${process.env.NODE_ENV}", sender="${process.env.SES_SENDER_EMAIL}", to="${to}"`);
+
+    if (!to || !subject || (!html && !text)) { //need one of html or text
+        throw new EmailSendError('VALIDATION_ERROR', 'sendEmail requires "to", "subject", and either "html" or "text".'); //trhow is used with a try/catch
     }
 
     const params = {
@@ -46,14 +48,17 @@ const sendEmail = async ({ to, subject, html, text }) => {
 
     try {
         const response = await sesClient.send(new SendEmailCommand(params));
+        console.log(`(SES) Email sent to ${to} - messageId: ${response.MessageId}`);
         return { success: true, dryRun: false, messageId: response.MessageId };
     } catch (err) {
         // If SES's response metadata came back, the request reached SES and SES rejected it
         // (bad/unverified sender, throttling, malformed address, etc). No metadata means the
         // request never made it to SES at all (network failure, DNS, timeout).
         if (err?.$metadata?.httpStatusCode) {
+            console.error(`(SES) Rejected email to ${to} - status ${err.$metadata.httpStatusCode}, code ${err.name}: ${err.message}`);
             throw new EmailSendError('SES_REJECTED', `SES rejected the email: ${err.message}`, err);
         }
+        console.error(`(SES) Could not reach SES for email to ${to}:`, err.message);
         throw new EmailSendError('REQUEST_NOT_SENT', `Could not reach SES: ${err.message}`, err);
     }
 };
