@@ -109,8 +109,10 @@ function LoginPage() {
                         />
                         {errors.password && <p style={{ color: 'red', fontSize: '0.9em', margin: '5px 0 0' }}>{errors.password.message}</p>}
                     </div>
-                    
+
                     <button type="submit" className='btn btn-primary w-100'>Login</button>
+
+                    <Link to="/forgot-password" className="verify-resend-btn">Forgot Password?</Link>
                     
                     <span className='signup-link'>
                         Don't have an account? <Link to="/signup">Sign Up</Link>

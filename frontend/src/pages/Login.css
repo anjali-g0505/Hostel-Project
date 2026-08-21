@@ -76,3 +76,115 @@
 .signup-link a:hover {
     text-decoration: underline;
 }
+
+/* Shared outlined secondary-action button - used by VerifyEmail's resend button and
+   LoginPage's Forgot Password button. */
+.verify-resend-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.6rem 1rem;
+    border: 1.5px solid #0d6efd;
+    border-radius: 6px;
+    background: transparent;
+    color: #0d6efd;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.verify-resend-btn:hover:not(:disabled) {
+    background: #0d6efd;
+    color: #fff;
+}
+
+.verify-resend-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.verify-resend-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.verify-resend-icon {
+    display: inline-block;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.verify-resend-icon.spinning {
+    animation: verify-spin 0.8s linear infinite;
+}
+
+@keyframes verify-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Used by ForgotPassword / ChangePassword only - an opaque card (unlike the translucent
+   .login-form-box) so it reads clearly over the background photo. */
+.soft-shadow-box {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    background-color: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 2px solid #dce7fb;
+    box-shadow: 0 10px 28px rgba(66, 68, 75, 0.18);
+}
+
+.soft-shadow-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #0d6efd, #6ea8fe);
+}
+
+.soft-shadow-box h4 {
+    color: #666;
+    font-weight: 400;
+    margin-bottom: 1.75rem;
+    font-size: 1.1rem;
+}
+
+/* Slightly larger body text than the base Login/Signup cards. */
+.soft-shadow-box p {
+    font-size: 1.1rem;
+}
+
+.soft-shadow-box .form-group label {
+    font-size: 1.05rem;
+}
+
+.soft-shadow-box .form-control {
+    font-size: 1.05rem;
+}
+
+.soft-shadow-box .btn {
+    font-size: 1.1rem;
+}
+
+.soft-shadow-box .otp-hint {
+    font-size: 0.95rem;
+}
+
+.soft-shadow-box .verify-timer {
+    font-size: 1.05rem;
+}
+
+.soft-shadow-box .verify-error-message {
+    font-size: 1rem;
+}
+
+.soft-shadow-box .signup-link {
+    font-size: 1.05rem;
+}

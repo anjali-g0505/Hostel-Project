@@ -67,48 +67,4 @@
     text-align: center;
 }
 
-.verify-resend-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    width: 100%;
-    margin-top: 1rem;
-    padding: 0.6rem 1rem;
-    border: 1.5px solid #0d6efd;
-    border-radius: 6px;
-    background: transparent;
-    color: #0d6efd;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
-}
-
-.verify-resend-btn:hover:not(:disabled) {
-    background: #0d6efd;
-    color: #fff;
-}
-
-.verify-resend-btn:active:not(:disabled) {
-    transform: scale(0.98);
-}
-
-.verify-resend-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.verify-resend-icon {
-    display: inline-block;
-    font-size: 1rem;
-    line-height: 1;
-}
-
-.verify-resend-icon.spinning {
-    animation: verify-spin 0.8s linear infinite;
-}
-
-@keyframes verify-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
+/* .verify-resend-btn and friends moved to Login.css - shared with LoginPage's Forgot Password button */

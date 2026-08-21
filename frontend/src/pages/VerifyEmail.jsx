@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './Login.css';
 import './VerifyEmail.css';
 import { handleError, handleSuccess } from './utils';
+import authBgImage from '../assets/college_hostel.png';
 
 const OTP_URL = 'http://localhost:8080/auth/send-otp';
 const VERIFY_URL = 'http://localhost:8080/auth/verify-otp';
@@ -142,8 +143,8 @@ function VerifyEmail() {
     return (
         <>
             <ToastContainer position="top-right" autoClose={3000} />
-            <div className="login-container">
-                <div className="login-form-box verify-email-box">
+            <div className="login-container" style={{ backgroundImage: `url(${authBgImage})` }}>
+                <div className="login-form-box verify-email-box soft-shadow-box">
                     <div className={`verify-icon-badge${verified ? ' verified' : ''}`} aria-hidden="true">
                         {verified ? '✓' : '✉'}
                     </div>

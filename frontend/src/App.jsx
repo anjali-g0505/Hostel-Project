@@ -5,6 +5,8 @@ import { connectSocket } from './socket'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import VerifyEmail from './pages/VerifyEmail'
+import ForgotPassword from './pages/ForgotPassword'
+import ChangePassword from './pages/ChangePassword'
 import LandingPage from './pages/LandingPage'
 import { Navigate, Route, Routes, Outlet } from 'react-router-dom' // Import Outlet
 import StudentDashboard from './pages/Student/StudentDashboard'
@@ -59,6 +61,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ChangePassword />} />
             <Route path="/home" element={<LandingPage />} />
           </Route>
 

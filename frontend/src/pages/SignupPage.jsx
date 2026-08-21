@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import hostelImage1 from '../assets/hostel-1.jpg'; 
 import hostelImage2 from '../assets/hostel-2.jpeg';
 import hostelImage3 from '../assets/hostel-3.jpeg';
-import { handleError, handleSuccess } from './utils';
+import { handleError, handleSuccess, passwordValidationRules } from './utils';
 
 function SignupPage() {
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -205,13 +205,7 @@ function SignupPage() {
                                 id="password" 
                                 className='form-control'
                                 placeholder='Enter Password'
-                                {...register("password", {
-                                    required: "Password is required",
-                                    minLength: {
-                                        value: 6,
-                                        message: "Password must be at least 6 characters"
-                                    }
-                                })}
+                                {...register("password", passwordValidationRules)}
                             />
                             {errors.password && <p className="error-message" style={{ color: 'red', fontSize: '1rem', margin: '5px 0 0' }}>{errors.password.message}</p>}
                         </div>
