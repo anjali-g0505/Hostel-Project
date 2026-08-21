@@ -9,6 +9,9 @@ import { handleError, handleSuccess } from './utils';
 const OTP_URL = 'http://localhost:8080/auth/send-otp';
 const VERIFY_URL = 'http://localhost:8080/auth/verify-otp';
 
+// Keyed per-email so switching accounts in the same tab doesn't reuse a stale expiresAt.
+const otpStorageKey = (email) => `otp_expiresAt:${email}`;
+
 function VerifyEmail() {
     const [searchParams] = useSearchParams();
     const email = searchParams.get('email');
@@ -40,6 +43,7 @@ function VerifyEmail() {
                 setExpiresAt(result.expiresAt);
                 setShowResend(false);
                 setOtpInput('');
+                sessionStorage.setItem(otpStorageKey(email), result.expiresAt);
                 handleSuccess('Verification code sent to your email.');
             } else {
                 handleError(result.message || 'Could not send verification code.');
@@ -54,7 +58,9 @@ function VerifyEmail() {
         }
     };
 
-    // Auto-send once on mount. Guarded against React StrictMode's dev double-invoke.
+    // Auto-send once on mount - unless a still-valid expiresAt survived a page refresh in
+    // sessionStorage, in which case we just resume that countdown instead of sending again.
+    // hasSentOtp also guards against React StrictMode's dev mount->cleanup->mount double-invoke.
     useEffect(() => {
         if (!email) {
             handleError('Missing email. Please sign up again.');
@@ -63,8 +69,14 @@ function VerifyEmail() {
         }
         if (hasSentOtp.current) return;
         hasSentOtp.current = true;
+
+        const storedExpiresAt = sessionStorage.getItem(otpStorageKey(email));
+        if (storedExpiresAt && new Date(storedExpiresAt).getTime() > Date.now()) {
+            setExpiresAt(storedExpiresAt);
+            return;
+        }
+
         callSendOtp();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Countdown driven by the real server-issued expiresAt, not a hardcoded 3 minutes.
@@ -104,6 +116,7 @@ function VerifyEmail() {
 
             if (result.success) {
                 setVerified(true);
+                sessionStorage.removeItem(otpStorageKey(email));
                 handleSuccess(result.message || 'User has been verified, please login.');
                 setTimeout(() => navigate('/login'), 1500);
                 return;

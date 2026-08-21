@@ -119,7 +119,7 @@ const sendOtp = async (req, res) => {
             return res.status(500).json({ success: false, message: 'Could not send verification email. Please try again.' });
         }
 
-        return res.status(200).json({ success: true, expiresAt });
+        return res.status(200).json({ success: true, expiresAt }); //only sends back expiresAt
 
     } catch (error) {
         console.error("Send OTP Error:", error);
