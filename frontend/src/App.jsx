@@ -8,6 +8,7 @@ import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
 import ChangePassword from './pages/ChangePassword'
 import LandingPage from './pages/LandingPage'
+import Contact from './pages/Contact'
 import { Navigate, Route, Routes, Outlet } from 'react-router-dom' // Import Outlet
 import StudentDashboard from './pages/Student/StudentDashboard'
 import MessDashboard from './pages/Mess/MessDashboard'
@@ -64,6 +65,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ChangePassword />} />
             <Route path="/home" element={<LandingPage />} />
+            <Route path="/contact" element={<Contact />} />
           </Route>
 
           {/* Routes with the AppNavbar */}

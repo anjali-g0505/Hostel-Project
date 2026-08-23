@@ -122,7 +122,7 @@ function NightOutForm() {
                                 required: "To date is required",
                                 validate: value => {
                                     const fromDate = getValues("fromDate");
-                                    return !fromDate || new Date(value) >= new Date(fromDate) || "'To' date must be on or after 'From' date";
+                                    return !fromDate || new Date(value) > new Date(fromDate) || "'To' date must be after 'From' date";
                                 }
                             })}
                         />

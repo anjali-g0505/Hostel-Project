@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Login.css';
@@ -145,6 +145,12 @@ function VerifyEmail() {
             <ToastContainer position="top-right" autoClose={3000} />
             <div className="login-container" style={{ backgroundImage: `url(${authBgImage})` }}>
                 <div className="login-form-box verify-email-box soft-shadow-box">
+                    <Link to="/home" className="home-icon-btn" aria-label="Home" title="Home">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <path d="M9 22V12h6v10" />
+                        </svg>
+                    </Link>
                     <div className={`verify-icon-badge${verified ? ' verified' : ''}`} aria-hidden="true">
                         {verified ? '✓' : '✉'}
                     </div>

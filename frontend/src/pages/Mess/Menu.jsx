@@ -6,6 +6,18 @@ import DisplayMenuItemCard from './Components/DisplayMenuItemCard.jsx';
 import { socket } from '../../socket';
 import './Menu.css';
 
+import breakfastImg from '../../assets/breakfast.png';
+import lunchImg from '../../assets/lunch.png';
+import snacksImg from '../../assets/snack.png';
+import dinnerImg from '../../assets/dinner.png';
+
+const CATEGORY_IMAGES = {
+    breakfast: breakfastImg,
+    lunch: lunchImg,
+    snacks: snacksImg,
+    dinner: dinnerImg
+};
+
 function Menu() {
     const [activeCategory, setActiveCategory] = useState('breakfast');
     const [specInstruction, setSpecInstruction] = useState("");
@@ -153,9 +165,17 @@ function Menu() {
                         className={activeCategory === cat ? 'active' : ''}
                         onClick={() => setActiveCategory(cat)}
                     >
+                        <img src={CATEGORY_IMAGES[cat]} alt="" className="tab-icon" />
                         {cat.toUpperCase()}
                     </button>
                 ))}
+            </div>
+
+            <div className="category-banner">
+                <img src={CATEGORY_IMAGES[activeCategory]} alt={activeCategory} />
+                <div className="category-banner-overlay">
+                    <h2>{activeCategory}</h2>
+                </div>
             </div>
 
             <div className="instructions-section">

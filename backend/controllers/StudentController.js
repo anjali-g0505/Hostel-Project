@@ -21,7 +21,7 @@ const nightoutForm = async(req,res)=>{
                     status,
                     wardenRemark
                 });
-        console.log("Announcement created");
+        console.log("Application created");
         await newApplication.save();
         res.status(201).json({ //created
                 message:`Night-out form for user ${req.user.username} submitted!`,
@@ -29,7 +29,7 @@ const nightoutForm = async(req,res)=>{
             })
     }
     catch(error){
-        console.error("Could not create Announcement:", error); 
+        console.error("Could not create Application:", error); 
         console.log("Error", error);
         res.status(500).json({ //Internal Server Error
             message:'Internal Server Error',

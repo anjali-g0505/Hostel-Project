@@ -78,7 +78,13 @@ function LoginPage() {
                 style={{ backgroundImage: `url(${loginBgImage})` }}
             >
                 {/* handleSubmit receives the event, calls preventDefault() on it, runs all validations, and only if validation passes, it calls the handleLogin function. */}
-                <form className='login-form-box' onSubmit={handleSubmit(handleLogin)}> 
+                <form className='login-form-box' onSubmit={handleSubmit(handleLogin)}>
+                    <Link to="/home" className="home-icon-btn" aria-label="Home" title="Home">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <path d="M9 22V12h6v10" />
+                        </svg>
+                    </Link>
                     <h1>Welcome Back</h1>
                     <h4 textAlign="center">Please log in to your account.</h4>
 

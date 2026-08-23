@@ -69,7 +69,9 @@ const applicationVal=(req,res,next)=>{
                 'date.min': 'Start date must be today or a future date',
             }),
 
-        toDate: Joi.date().iso().greater(Joi.ref('fromDate')).required().messages(),
+        toDate: Joi.date().iso().greater(Joi.ref('fromDate')).required().messages({
+                'date.greater': "'To' date must be after 'From' date",
+            }),
 
         parentName: Joi.string().trim().min(2).required().messages(),
 

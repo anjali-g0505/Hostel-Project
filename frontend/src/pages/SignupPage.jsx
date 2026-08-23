@@ -108,6 +108,12 @@ function SignupPage() {
                 {/* FORM HALF*/}
                 <div className='signup-form-half'>
                     <form className='signup-form' onSubmit={handleSubmit(handleSignup)}>
+                        <Link to="/home" className="home-icon-btn" aria-label="Home" title="Home">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                <path d="M9 22V12h6v10" />
+                            </svg>
+                        </Link>
                         <h1>Please sign up to continue</h1>
                         
                         <div className='form-group'>
