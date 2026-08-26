@@ -6,9 +6,10 @@ import './Login.css';
 import './VerifyEmail.css';
 import { handleError, handleSuccess } from './utils';
 import authBgImage from '../assets/college_hostel.png';
+import { API_BASE_URL } from '../config';
 
-const OTP_URL = 'http://localhost:8080/auth/send-otp';
-const VERIFY_URL = 'http://localhost:8080/auth/verify-otp';
+const OTP_URL = `${API_BASE_URL}/api/auth/send-otp`;
+const VERIFY_URL = `${API_BASE_URL}/api/auth/verify-otp`;
 
 // Keyed per-email so switching accounts in the same tab doesn't reuse a stale expiresAt.
 const otpStorageKey = (email) => `otp_expiresAt:${email}`;

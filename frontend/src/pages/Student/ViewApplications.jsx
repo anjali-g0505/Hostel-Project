@@ -4,7 +4,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { handleSuccess, handleError } from '../utils.js'; 
 import Card from '../Student/components/Card.jsx'; 
-import './ViewApplications.css'; 
+import './ViewApplications.css';
+import { API_BASE_URL } from '../../config';
 
 function ViewApplications() {
     const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +22,7 @@ function ViewApplications() {
                     return navigate('/login');
                 }
     
-                const url = "http://localhost:8080/student/view-applications"; 
+                const url = `${API_BASE_URL}/api/student/view-applications`;
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {

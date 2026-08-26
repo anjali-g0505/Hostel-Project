@@ -5,6 +5,7 @@ import { handleError, handleSuccess } from '../utils';
 import OrderCard from './components/OrderCard.jsx' // Corrected component name
 import { socket } from '../../socket';
 import './ViewCart.css';
+import { API_BASE_URL } from '../../config';
 
 
 function ViewCart() {
@@ -60,7 +61,7 @@ function ViewCart() {
                 return navigate('/login');
             }
             
-            const url = `http://localhost:8080/api/view-my-orders`; 
+            const url = `${API_BASE_URL}/api/view-my-orders`;
             const response = await fetch(url, { 
                 headers: {
                     'Authorization': `Bearer ${token}`

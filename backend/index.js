@@ -1,5 +1,9 @@
 const express = require('express');
 const app = express();
+// Trust the reverse proxy (nginx locally, load balancer/CDN on AWS) so req.ip reflects
+// the original client's address (via X-Forwarded-For) instead of the proxy hop - used
+// by the OTP rate limiter's per-IP fallback key.
+app.set('trust proxy', true);
 const http = require('http');
 const bodyParser = require('body-parser');
 const Razorpay = require('razorpay');
@@ -31,15 +35,15 @@ app.get('/ping', (req,res) => {
 })
 app.use(express.json()); 
 
-// 2. ADD THIS LINE: Required for Razorpay callback_url
+// Required for Razorpay callback_url
 app.use(express.urlencoded({ extended: true }));
 
 app.use(bodyParser.json());
 app.use(cors());//will take requests from any ports
-app.use('/auth', AuthRouter); 
-app.use('/student', StudentRouter);
-app.use('/mess', MessRouter);
-app.use('/warden', WardenRouter);
+app.use('/api/auth', AuthRouter);
+app.use('/api/student', StudentRouter);
+app.use('/api/mess', MessRouter);
+app.use('/api/warden', WardenRouter);
 app.use('/api', AnnouncementRouter);
 app.use('/api', MenuRouter);
 app.use('/api', OrderRouter);

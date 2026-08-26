@@ -4,8 +4,6 @@ const crypto = require("crypto");
 const OrderModel = require("../models/orders");
 const { emitToMessRoom, emitToUser } = require("../socket/socketEmitter");
 
-const FRONTEND_URL = "http://localhost:5173";
-
 const processPayment = async (req, res) => {
     try {
         const { orderId } = req.body;
@@ -70,10 +68,10 @@ const paymentVerification = async (req, res) => {
         emitToMessRoom('order:paid', order);
         emitToUser(order.studentID._id.toString(), 'order:paid', order);
 
-        return res.redirect(`${FRONTEND_URL}${viewCartPath}?payment=success`);
+        return res.redirect(`${viewCartPath}?payment=success`);
     }
 
-    return res.redirect(`${FRONTEND_URL}${viewCartPath}?payment=failed`);
+    return res.redirect(`${viewCartPath}?payment=failed`);
 };
 
 module.exports={

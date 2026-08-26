@@ -6,8 +6,9 @@ import './Login.css';
 import { useForm } from 'react-hook-form';
 import { handleError, handleSuccess, passwordValidationRules } from './utils';
 import authBgImage from '../assets/college_hostel.png';
+import { API_BASE_URL } from '../config';
 
-const RESET_PASSWORD_URL = 'http://localhost:8080/auth/reset-password';
+const RESET_PASSWORD_URL = `${API_BASE_URL}/api/auth/reset-password`;
 
 function ChangePassword() {
     const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm();

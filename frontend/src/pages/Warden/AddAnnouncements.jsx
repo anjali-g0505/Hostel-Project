@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './AddAnnouncements.css';
-import { handleError, handleSuccess } from '../utils'; 
+import { handleError, handleSuccess } from '../utils';
+import { API_BASE_URL } from '../../config';
 import { useForm } from 'react-hook-form'; 
 
 function AddAnnouncement() {
@@ -30,7 +31,7 @@ function AddAnnouncement() {
                 return navigate('/login');
             }
 
-            const url = "http://localhost:8080/api/add-announcements";
+            const url = `${API_BASE_URL}/api/add-announcements`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {

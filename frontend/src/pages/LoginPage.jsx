@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'; // Import useForm
 import loginBgImage from '../assets/hostel-2.jpeg';
 import { handleError } from './utils';
 import { connectSocket } from '../socket';
+import { API_BASE_URL } from '../config';
 
 function LoginPage() {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -18,7 +19,7 @@ function LoginPage() {
         console.log("Login data to be sent:", data);
         
         try { 
-            const url="http://localhost:8080/auth/login"; 
+            const url=`${API_BASE_URL}/api/auth/login`;
             const response=await fetch(url, {
                 method:"POST",
                 headers:{

@@ -24,7 +24,7 @@ import TakeOrder from './pages/Mess/TakeOrder'
 import OrderReady from './pages/Mess/OrderReady'
 import OrderLogs from './pages/Mess/OrderLogs'
 import Menu from './pages/Mess/Menu'
-import ViewCart from './pages/Warden/viewCart'
+import ViewCart from './pages/Warden/ViewCart'
 
 function ProtectedLayout() {
   return (

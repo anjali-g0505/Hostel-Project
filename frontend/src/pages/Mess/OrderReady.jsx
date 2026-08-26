@@ -6,6 +6,7 @@ import { handleSuccess, handleError } from '../utils';
 import AcceptedOrderCard from '../Mess/Components/AcceptedOrderCard';
 import { socket } from '../../socket';
 import './OrderReady.css';
+import { API_BASE_URL } from '../../config';
 
 function OrderReady() {
     const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +59,7 @@ function OrderReady() {
                 return navigate('/login');
             }
             
-            const url = `http://localhost:8080/api/${category}/get-paid-orders`;
+            const url = `${API_BASE_URL}/api/${category}/get-paid-orders`;
             const response = await fetch(url, { 
                 method: "GET",
                 headers: {
@@ -99,7 +100,7 @@ function OrderReady() {
             return navigate('/login');
         }
 
-        const API_URL = `http://localhost:8080/api/${id}/change-order-status`; 
+        const API_URL = `${API_BASE_URL}/api/${id}/change-order-status`;
 
         try {
             const response = await fetch(API_URL, {

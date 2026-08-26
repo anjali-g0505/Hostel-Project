@@ -4,7 +4,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './NightOutForm.css'; 
 import { handleError, handleSuccess } from '../utils'; 
-import { useForm } from 'react-hook-form'; 
+import { useForm } from 'react-hook-form';
+import { API_BASE_URL } from '../../config';
 
 function NightOutForm() {
     
@@ -39,7 +40,7 @@ function NightOutForm() {
                 return navigate('/login');
             }
     
-            const url = "http://localhost:8080/student/night-out";
+            const url = `${API_BASE_URL}/api/student/night-out`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {

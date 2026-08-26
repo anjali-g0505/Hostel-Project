@@ -6,6 +6,7 @@ import { handleSuccess, handleError } from '../utils';
 import PendingOrderCard from '../Mess/Components/PendingOrderCard';
 import { socket } from '../../socket';
 import './TakeOrder.css';
+import { API_BASE_URL } from '../../config';
 
 function TakeOrder() {
     const [isLoading, setIsLoading] = useState(true);
@@ -55,7 +56,7 @@ function TakeOrder() {
                 return navigate('/login');
             }
             
-            const url = `http://localhost:8080/api/${category}/get-pending-orders`; 
+            const url = `${API_BASE_URL}/api/${category}/get-pending-orders`;
             const response = await fetch(url, { 
                 method: "GET",
                 headers: {
@@ -96,7 +97,7 @@ function TakeOrder() {
             return navigate('/login');
         }
 
-        const API_URL = `http://localhost:8080/api/${id}/change-order-status`; 
+        const API_URL = `${API_BASE_URL}/api/${id}/change-order-status`;
 
         try {
             const response = await fetch(API_URL, {

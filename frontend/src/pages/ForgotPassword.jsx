@@ -6,9 +6,10 @@ import './Login.css';
 import './VerifyEmail.css';
 import { handleError, handleSuccess } from './utils';
 import authBgImage from '../assets/college_hostel.png';
+import { API_BASE_URL } from '../config';
 
-const FORGOT_PASSWORD_URL = 'http://localhost:8080/auth/forgot-password';
-const VERIFY_RESET_OTP_URL = 'http://localhost:8080/auth/verify-reset-otp';
+const FORGOT_PASSWORD_URL = `${API_BASE_URL}/api/auth/forgot-password`;
+const VERIFY_RESET_OTP_URL = `${API_BASE_URL}/api/auth/verify-reset-otp`;
 
 // Purely a UI estimate matching the backend's reset OTP TTL - the forgot-password
 // response never reveals whether an OTP was actually issued, since doing so would

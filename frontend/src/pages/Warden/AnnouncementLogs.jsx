@@ -4,7 +4,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { handleSuccess, handleError } from '../utils'; 
 import CardLog from './components/CardLog'; 
-import './AnnouncementLog.css'; 
+import './AnnouncementLog.css';
+import { API_BASE_URL } from '../../config';
 
 function AnnouncementLogs() {
     const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +27,7 @@ function AnnouncementLogs() {
                     return navigate('/login');
                 }
                 
-                const url = "http://localhost:8080/api/announcement-logs"; 
+                const url = `${API_BASE_URL}/api/announcement-logs`;
                 const response = await fetch(url, { 
                     method: "GET",
                     headers: {
@@ -70,7 +71,7 @@ function AnnouncementLogs() {
             return navigate('/login');
         }
 
-        const API_URL = `http://localhost:8080/api/change-status/${id}/status`; 
+        const API_URL = `${API_BASE_URL}/api/change-status/${id}/status`; 
 
         try {
             const response = await fetch(API_URL, {
@@ -116,7 +117,7 @@ function AnnouncementLogs() {
         
         const token = localStorage.getItem('token');
 
-        const API_URL = `http://localhost:8080/api/announcements/${itemToDelete.id}`;
+        const API_URL = `${API_BASE_URL}/api/announcements/${itemToDelete.id}`;
 
         try {
             const response = await fetch(API_URL, {

@@ -4,7 +4,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { handleSuccess, handleError } from '../utils'; 
 import OrderLogCard from '../Mess/Components/OrderLogCard'; 
-import './OrderLogs.css'; 
+import './OrderLogs.css';
+import { API_BASE_URL } from '../../config';
 
 function OrderLogs() {
     const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +27,7 @@ function OrderLogs() {
                 return navigate('/login');
             }
             
-            const url = `http://localhost:8080/api/${category}/order-log`; 
+            const url = `${API_BASE_URL}/api/${category}/order-log`;
             const response = await fetch(url, { 
                 method: "GET",
                 headers: {

@@ -9,6 +9,7 @@ import hostelImage1 from '../assets/hostel-1.jpg';
 import hostelImage2 from '../assets/hostel-2.jpeg';
 import hostelImage3 from '../assets/hostel-3.jpeg';
 import { handleError, handleSuccess, passwordValidationRules } from './utils';
+import { API_BASE_URL } from '../config';
 
 function SignupPage() {
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -23,7 +24,7 @@ function SignupPage() {
         console.log("Form data to be sent:", data);
         
         try {
-            const url="http://localhost:8080/auth/signup";
+            const url=`${API_BASE_URL}/api/auth/signup`;
             const response=await fetch(url, {
                 method:"POST",
                 headers:{

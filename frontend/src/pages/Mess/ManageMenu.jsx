@@ -4,7 +4,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { handleError, handleSuccess } from '../utils.js'; 
 import MenuItemCard from '../Mess/Components/MenuItemCard.jsx'; 
 import './ManageMenu.css'; 
-import { useForm } from 'react-hook-form'; 
+import { useForm } from 'react-hook-form';
+import { API_BASE_URL } from '../../config';
 
 function ManageMenu() {
     const [activeCategory, setActiveCategory] = useState('breakfast');
@@ -64,7 +65,7 @@ function ManageMenu() {
             handleError("Token expired, please login in again.");
             return navigate('/login');
         }
-        const API_URL = `http://localhost:8080/api/${category}/get-available-items`;
+        const API_URL = `${API_BASE_URL}/api/${category}/get-available-items`;
         
         try {
             const response = await fetch(API_URL, { 
@@ -100,7 +101,7 @@ function ManageMenu() {
 
     const fetchUnavailableItems = async (category) => {
         const token = localStorage.getItem('token');
-        const url = `http://localhost:8080/api/${category}/get-unavailable-items`;
+        const url = `${API_BASE_URL}/api/${category}/get-unavailable-items`;
         
         try {
             const response = await fetch(url, {
@@ -154,7 +155,7 @@ function ManageMenu() {
         const token = localStorage.getItem('token');
         
         const apiCalls = selectedCategories.map(category => {
-            return fetch('http://localhost:8080/api/add-item', {
+            return fetch(`${API_BASE_URL}/api/add-item`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ 
@@ -200,7 +201,7 @@ function ManageMenu() {
     const handleChangeStatus = async (id, newStatus) => {
         console.log(`Changing item ${id} to ${newStatus}`);
         const token = localStorage.getItem('token');
-        const url = `http://localhost:8080/api/${id}/change-status`;
+        const url = `${API_BASE_URL}/api/${id}/change-status`;
         
         try {
             const response = await fetch(url, {
@@ -237,7 +238,7 @@ function ManageMenu() {
     const handleDeleteItem = async (id, name) => {
         console.log(`deleting item ${id}.`);
         const token = localStorage.getItem('token');
-        const url = `http://localhost:8080/api/delete-item/${id}`;
+        const url = `${API_BASE_URL}/api/delete-item/${id}`;
         
         try {
             const response = await fetch(url, {

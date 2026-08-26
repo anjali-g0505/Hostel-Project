@@ -4,6 +4,7 @@ import { handleError, handleSuccess } from '../utils';
 import { useNavigate } from 'react-router-dom';
 import PendingApplicationCard from './components/PendingApplicationCard';
 import './ViewPendingApplications.css';
+import { API_BASE_URL } from '../../config';
 
 function ViewPendingApplications() {
 
@@ -21,7 +22,7 @@ function ViewPendingApplications() {
                         return navigate('/login');
                     }
                     
-                    const url = "http://localhost:8080/warden/view-applications"; 
+                    const url = `${API_BASE_URL}/api/warden/view-applications`;
                     const response = await fetch(url, { 
                         method: "GET",
                         headers: {
@@ -60,7 +61,7 @@ function ViewPendingApplications() {
     const changeStatusAddRemark = async (id, newStatus, wardenRemark)=>{
         setIsLoading(true);
         const token=localStorage.getItem('token');
-        const API_URL=`http://localhost:8080/warden/leave-approval/${id}/status`; 
+        const API_URL=`${API_BASE_URL}/api/warden/leave-approval/${id}/status`;
         if(!token){
             setIsLoading(false);
             handleError("Token not found, please login again.");

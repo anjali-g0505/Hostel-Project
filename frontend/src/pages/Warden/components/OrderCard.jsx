@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../../utils';
 import OrderProgressStepper from './OrderProgressStepper';
+import { API_BASE_URL } from '../../../config';
 
 function OrderCard(props) {
     const [isLoading, setIsLoading]= useState(false);
@@ -28,7 +29,7 @@ const handlePayment = async () => {
             return navigate('/login');
         }
         console.log("TOken receieved");
-        const keyResponse = await fetch("http://localhost:8080/api/getKey", {
+        const keyResponse = await fetch(`${API_BASE_URL}/api/getKey`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -43,7 +44,7 @@ const handlePayment = async () => {
         console.log("Key receieved");
 
         // Creating the Razorpay Order
-        const paymentResponse = await fetch("http://localhost:8080/api/payment/process", {
+        const paymentResponse = await fetch(`${API_BASE_URL}/api/payment/process`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ const handlePayment = async () => {
             name: 'Mess Management',
             description: `Payment for ${props.category}`,
             order_id: paymentResult.order.id,
-            callback_url: 'http://localhost:8080/api/paymentVerification', 
+            callback_url: `${window.location.origin}/api/paymentVerification`,
             prefill: {
                 name: props.name,
             },

@@ -10,6 +10,7 @@ import breakfastImg from '../../assets/breakfast.png';
 import lunchImg from '../../assets/lunch.png';
 import snacksImg from '../../assets/snack.png';
 import dinnerImg from '../../assets/dinner.png';
+import { API_BASE_URL } from '../../config';
 
 const CATEGORY_IMAGES = {
     breakfast: breakfastImg,
@@ -66,7 +67,7 @@ function Menu() {
             const token = localStorage.getItem('token');
             if (!token) return navigate('/login');
 
-            const API_URL = `http://localhost:8080/api/${category}/get-available-items`;
+            const API_URL = `${API_BASE_URL}/api/${category}/get-available-items`;
             const response = await fetch(API_URL, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -119,7 +120,7 @@ function Menu() {
         setIsLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/api/request-order`, { 
+            const response = await fetch(`${API_BASE_URL}/api/request-order`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',

@@ -4,7 +4,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { handleSuccess, handleError } from '../utils'; 
 import Card from './components/Card'; 
-import './ViewAnnouncements.css'; 
+import './ViewAnnouncements.css';
+import { API_BASE_URL } from '../../config';
 
 function ViewAnnouncements() {
     const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +22,7 @@ function ViewAnnouncements() {
                     return navigate('/login');
                 }
 
-                const url = "http://localhost:8080/api/view-announcements"; 
+                const url = `${API_BASE_URL}/api/view-announcements`;
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
